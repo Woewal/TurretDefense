@@ -12,19 +12,29 @@ public class LoadBuildings : MonoBehaviour {
 
     private void Start()
     {
-        AvailableBuildings = new List<Building>();
+        LoadAvailableBuildings();
+
         LoadButtons();
+    }
+
+    private void LoadAvailableBuildings()
+    {
+        AvailableBuildings = SaveState.Instance.AvailableBuildings;
+
+        if (AvailableBuildings == null)
+        {
+            AvailableBuildings = new List<Building>();
+            AvailableBuildings.Add(DefaultBuilding);
+            SaveState.Save();
+        }
     }
 
     private void LoadButtons()
     {
-        BuildingButton turretButton = Instantiate(TurretButton, gameObject.transform);
-        turretButton.Building = DefaultBuilding;
-
         foreach (Building availableBuilding in AvailableBuildings)
         {
-            turretButton = Instantiate(TurretButton, gameObject.transform);
-            turretButton.Building = availableBuilding;
+            BuildingButton buildingButton = Instantiate(TurretButton, gameObject.transform);
+            buildingButton.Building = availableBuilding;
         }
     }
 }

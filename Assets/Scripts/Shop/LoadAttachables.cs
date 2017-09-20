@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LoadAttachables : MonoBehaviour {
 
-    public List<BuildingAttachable> AvailableComponents;
+    public List<BuildingAttachable> AvailableAttachments;
     public BuildingAttachable DefaultComponent;
     public BuildingAttachable DefaultProjectile;
 
@@ -13,21 +13,28 @@ public class LoadAttachables : MonoBehaviour {
 
     private void Start()
     {
-        AvailableComponents = new List<BuildingAttachable>();
+        LoadAvailableAttachments();
         LoadButtons();
+    }
+
+    private void LoadAvailableAttachments()
+    {
+        AvailableAttachments = SaveState.Instance.AvailableAttachments;
+
+        if (AvailableAttachments == null)
+        {
+            AvailableAttachments = new List<BuildingAttachable>();
+            AvailableAttachments.Add(DefaultComponent);
+            AvailableAttachments.Add(DefaultProjectile);
+            SaveState.Save();
+        }
     }
 
     private void LoadButtons()
     {
-        AttachableButton componentButton = Instantiate(ComponentButton, gameObject.transform);
-        componentButton.BuildingAttachable = DefaultComponent;
-
-        componentButton = Instantiate(ComponentButton, gameObject.transform);
-        componentButton.BuildingAttachable = DefaultComponent;
-
-        foreach (BuildingComponent availableComponent in AvailableComponents)
+        foreach (BuildingAttachable availableComponent in AvailableAttachments)
         {
-            componentButton = Instantiate(ComponentButton, gameObject.transform);
+            AttachableButton componentButton = Instantiate(ComponentButton, gameObject.transform);
             componentButton.BuildingAttachable = availableComponent;
         }
     }
