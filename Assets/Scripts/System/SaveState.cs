@@ -9,8 +9,7 @@ public class SaveState {
 
     public static SaveState Instance;
 
-    public List<Building> AvailableBuildings;
-    public List<BuildingAttachable> AvailableAttachments;
+    public List<BuildingData> AvailableBuildings;
 
     public static void Initiate()
     {
@@ -26,11 +25,16 @@ public class SaveState {
         FileStream file = File.Create(Application.persistentDataPath + "/save.gd");
         bf.Serialize(file, SaveState.Instance);
         file.Close();
+
+        bf = new BinaryFormatter();
+        file = File.Open(Application.persistentDataPath + "/save.gd", FileMode.Open);
+        SaveState.Instance = (SaveState)bf.Deserialize(file);
+        file.Close();
     }
 
     public static bool Load()
     {
-        if (File.Exists(Application.persistentDataPath + "/savedGames.gd"))
+        if (File.Exists(Application.persistentDataPath + "/save.gd"))
         {
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Open(Application.persistentDataPath + "/save.gd", FileMode.Open);
@@ -42,5 +46,10 @@ public class SaveState {
         {
             return false;
         }
+    }
+
+    public static void Delete()
+    {
+        File.Delete(Application.persistentDataPath + "/save.gd");
     }
 }

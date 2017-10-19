@@ -2,29 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShootingCollider : MonoBehaviour {
-    private Turret Turret;
-
-    public void Start()
-    {
-        Turret = gameObject.GetComponentInParent<Turret>();
-    }
+public class ShootingCollider : MonoBehaviour
+{
+    public Turret Turret;
+    public bool IsEnabled;
 
     private void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.tag == "Enemy")
+        if (IsEnabled)
         {
-            Turret.Targets.Add(col.gameObject);
-            Turret.CheckTargets();
+            if (col.gameObject.tag == "Enemy")
+            {
+                Turret.Targets.Add(col.gameObject);
+                Turret.CheckEnemies();
+            }
         }
+
     }
 
     private void OnTriggerExit(Collider col)
     {
-        if(col.gameObject.tag == "Enemy")
+        if (IsEnabled)
         {
-            Turret.Targets.Remove(col.gameObject);
-            Turret.CheckTargets();
+            if (col.gameObject.tag == "Enemy")
+            {
+                Turret.Targets.Remove(col.gameObject);
+                Turret.CheckEnemies();
+            }
         }
     }
 }

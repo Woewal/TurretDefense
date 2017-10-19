@@ -1,12 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BuildingComponent : BuildingAttachable
+public abstract class BuildingComponent : BuildingAttachable
 {
+    public static float Size = 1.2f;
+
     internal Building Building;
 
-    internal void InitializeComponent()
+    public BuildingAttachable Module;
+
+    public void TurnOn()
     {
         Building = GetComponentInParent<Building>();
+        StartComponent();
     }
+
+    public abstract void StartComponent();
 }

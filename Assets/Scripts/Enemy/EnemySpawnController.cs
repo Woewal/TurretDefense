@@ -81,7 +81,7 @@ public class EnemySpawnController : MonoBehaviour
     {
         if (Enemies.Count == 0 && AllEnemiesSpawned)
         {
-            Debug.Log("Wave cleared");
+            FieldController.instance.WinWave();
         }
     }
 }

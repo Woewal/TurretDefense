@@ -5,46 +5,41 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using System.Linq;
 
-public enum Target { Server, Player };
+
 public class Enemy : MonoBehaviour
 {
+    public enum Target { Server, Player };
+
     public float Health;
     public float MaxHealth = 30f;
 
-    private NavMeshAgent NMA;
-
     public Image HealthBar;
 
-    private List<Server> Targets;
+    private List<Server> Targets = new List<Server>();
+
+    EnemyNav EnemyNav;
 
     private void Start()
     {
-        NMA = GetComponent<NavMeshAgent>();
+        EnemyNav = GetComponent<EnemyNav>();
 
-        Targets = new List<Server>();
-        foreach (Server server in FieldController.instance.Servers)
+        if(EnemyNav == null)
         {
-            Targets.Add(server);
+            Debug.LogError("WTf");
         }
+
+        Targets = FieldController.instance.Servers;
 
         Health = MaxHealth;
 
         FindTarget();
     }
 
-    private void Update()
+    public void Reevaluate()
     {
-        if (!NMA.pathPending)
-        {
-            if (NMA.remainingDistance <= NMA.stoppingDistance)
-            {
-                if (!NMA.hasPath || NMA.velocity.sqrMagnitude == 0f)
-                {
 
-                }
-            }
-        }
     }
+    
 
     void FindTarget()
     {
@@ -52,7 +47,7 @@ public class Enemy : MonoBehaviour
             x => Vector3.Distance(this.transform.position, x.transform.position)
         ).ToList();
 
-        NMA.destination = Targets[0].transform.position;
+        EnemyNav.SetTarget(Targets[0].gameObject, Target.Server);
     }
 
     public void Damage(float amount)
@@ -89,5 +84,17 @@ public class Enemy : MonoBehaviour
         FieldController.instance.EnemySpawnController.Enemies.Remove(this);
         Destroy(gameObject);
         FieldController.instance.EnemySpawnController.CheckIfAllEnemiesAreDead();
+    }
+
+    public void SetTarget(Target Target)
+    {
+        if(Target == Target.Player)
+        {
+
+        }
+        else if(Target == Target.Server)
+        {
+
+        }
     }
 }

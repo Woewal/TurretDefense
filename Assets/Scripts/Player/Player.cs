@@ -4,18 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-public enum PlayerStates { Default, Carrying }
 
 public class Player : MonoBehaviour
 {
-    public List<Interactable> Interactables;
-    public PlayerStates PlayerState;
-    public PlayerSpaceIndicator SpaceIndicator;
+    public List<Interactable> Interactables = new List<Interactable>();
 
-    public void Start()
-    {
-        Interactables = new List<Interactable>();
-    }
+    public Action PrimaryAction;
+    public Action SecondaryAction;
+    public Action TertaryAction;
 
     public void Interact()
     {
@@ -29,25 +25,25 @@ public class Player : MonoBehaviour
         }
     }
 
-    Building BuildingToBePlaced;
-    public void FillPlayerHand(Building building)
+    public void SetPrimaryAction(Action action)
     {
-        PlayerState = PlayerStates.Carrying;
-        BuildingToBePlaced = building;
-        SpaceIndicator.gameObject.SetActive(true);
+        PrimaryAction = action;
     }
 
-    public void PlaceBuilding()
+    public void SetSecondaryAction(Action action)
     {
-        if (SpaceIndicator.CanPlace)
-        {
-            Building building = Instantiate(BuildingToBePlaced);
-            building.transform.position = SpaceIndicator.transform.position;
-            building.transform.rotation = gameObject.transform.rotation;
-            building.Place();
-            BuildingToBePlaced = null;
-            PlayerState = PlayerStates.Default;
-            SpaceIndicator.gameObject.SetActive(false);
-        }
+        SecondaryAction = action;
     }
+
+    public void SetTertaryAction(Action action)
+    {
+        TertaryAction = action;
+    }
+
+    public void EmptyAction()
+    {
+
+    }
+
 }
+

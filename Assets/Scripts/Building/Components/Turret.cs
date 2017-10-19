@@ -5,96 +5,57 @@ using System.Linq;
 
 public class Turret : BuildingComponent
 {
-    public List<GameObject> Targets;
-
-    private Coroutine TargetingCoroutine;
-    private Coroutine ShootingCoroutine;
-    private Coroutine ReturningCoroutine;
+    public List<GameObject> Targets = new List<GameObject>();
 
     public Projectile Projectile;
     public float ShootingInterval;
     public GameObject ProjectileSpawner;
 
-    private Quaternion DefaultRotation;
+    public ShootingCollider ShootingCollider;
 
-    public float RotationSpeed = 7f;
+    public float RotationSpeed = 0.4f;
 
-    void Start()
+    private GameObject Target;
+
+    private bool IsTargeting = false;
+
+    public override void StartComponent()
     {
-        InitializeComponent();
-        DefaultRotation = transform.rotation;
-        Targets = new List<GameObject>();
+        ShootingCollider.IsEnabled = true;
     }
-
-    public void CheckTargets()
-    {
-        if (Targets.Count != 0)
-        {
-            if (TargetingCoroutine == null)
-            {
-                if (ReturningCoroutine != null)
-                {
-                    StopCoroutine(ReturningCoroutine);
-                }
-                TargetingCoroutine = StartCoroutine(Target());
-            }
-        }
-        else
-        {
-            ReturningCoroutine = StartCoroutine(Return());
-        }
-    }
-
+    
     void SortTargets()
     {
+        RemoveNulls();
+
         Targets = Targets.OrderBy(
             x => Vector3.Distance(this.transform.position, x.transform.position)
         ).ToList();
     }
 
-    void TargetEnemy(GameObject enemy)
+    IEnumerator TargetEnemy()
     {
-        var targetRotation = Quaternion.LookRotation(enemy.transform.position - transform.position);
+        
+        IsTargeting = true;
+        StartCoroutine(Shoot());
 
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
-    }
-
-    private IEnumerator Target()
-    {
-        ShootingCoroutine = StartCoroutine(Shoot());
-        while (base.Building.On)
+        while (RemoveNulls() > 0)
         {
-            RemoveNulls();
-            if (Targets.Any())
+            if(Target == null)
             {
-                if (Targets.Count > 1)
-                {
-                    SortTargets();
-                }
-                if (Targets[0] != null)
-                {
-                    TargetEnemy(Targets[0]);
-                }
-                else
-                {
-                    StopCoroutine(ShootingCoroutine);
-                    ReturningCoroutine = StartCoroutine(Return());
-                    yield break;
-                }
+                AssignTarget();
             }
-            else
-            {
-                ReturningCoroutine = StartCoroutine(Return());
-                yield break;
-            }
+            var targetRotation = Quaternion.LookRotation(Target.transform.position - transform.position);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
             yield return null;
         }
-        ReturningCoroutine = StartCoroutine(Return());
+        IsTargeting = false;
+        StartCoroutine(Return());
     }
 
     private IEnumerator Shoot()
     {
-        while (true)
+        while (IsTargeting)
         {
             float currentTime = 0;
 
@@ -104,9 +65,13 @@ public class Turret : BuildingComponent
                 yield return null;
             }
 
-            Projectile projectile = Instantiate(Projectile).GetComponent<Projectile>();
-            projectile.transform.position = ProjectileSpawner.transform.position;
-            projectile.SetTarget(Targets[0]);
+            if(IsTargeting)
+            {
+                Projectile projectile = Instantiate(Projectile).GetComponent<Projectile>();
+                projectile.transform.position = ProjectileSpawner.transform.position;
+                projectile.InitiateProjectile(Target);
+            }
+            
 
             yield return null;
         }
@@ -114,20 +79,38 @@ public class Turret : BuildingComponent
 
     private IEnumerator Return()
     {
-        if (TargetingCoroutine != null)
+        StopCoroutine(TargetEnemy());
+        StopCoroutine(Shoot());
+        while (transform.rotation != transform.parent.rotation)
         {
-            StopCoroutine(TargetingCoroutine);
-            TargetingCoroutine = null;
-            StopCoroutine(ShootingCoroutine);
-        }
-        while (transform.rotation != DefaultRotation)
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, DefaultRotation, RotationSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, transform.parent.rotation, RotationSpeed * Time.deltaTime);
             yield return null;
         }
     }
 
-    private void RemoveNulls()
+    public void CheckEnemies()
+    {
+        if (Targets.Any())
+        {
+            if (!IsTargeting) {
+                AssignTarget();
+                StopCoroutine(Return());
+                StartCoroutine(TargetEnemy());
+            }
+        }
+        else
+        {
+            Target = null;
+        }
+    }
+
+    private void AssignTarget()
+    {
+        SortTargets();
+        Target = Targets[0];
+    }
+
+    private int RemoveNulls()
     {
         foreach (GameObject x in Targets.ToList())
         {
@@ -136,5 +119,7 @@ public class Turret : BuildingComponent
                 Targets.Remove(x);
             }
         }
+
+        return Targets.Count;
     }
 }

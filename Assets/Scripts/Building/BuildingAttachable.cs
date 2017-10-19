@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BuildingAttachable : MonoBehaviour {
-    public string Name;
-    public int BitCoinCost;
-    public int ScrapCost;
+    public int BitCoinCost = 30;
+    public int ScrapCost = 30;
+
+    public bool Available = false;
 }

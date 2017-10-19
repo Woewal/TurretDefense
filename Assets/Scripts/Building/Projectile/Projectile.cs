@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class Projectile : BuildingAttachable
+public abstract class Projectile : BuildingModule
 {
     GameObject Target;
     public float Speed;
@@ -10,7 +10,7 @@ public abstract class Projectile : BuildingAttachable
 
     private Coroutine FireCoroutine;
 
-    public void SetTarget(GameObject target)
+    public void InitiateProjectile(GameObject target)
     {
         Target = target;
         Fire();
@@ -26,8 +26,6 @@ public abstract class Projectile : BuildingAttachable
             yield break;
         }
         transform.LookAt(Target.transform.position);
-
-        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
 
         while (true)
         {
