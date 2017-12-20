@@ -5,6 +5,7 @@ using System.Linq;
 
 public class Turret : BuildingComponent
 {
+    /*
     public List<GameObject> Targets = new List<GameObject>();
 
     public Projectile Projectile;
@@ -17,13 +18,14 @@ public class Turret : BuildingComponent
 
     private GameObject Target;
 
-    private bool IsTargeting = false;
+    private bool IsTargeting = false;*/
 
     public override void StartComponent()
     {
-        ShootingCollider.IsEnabled = true;
+        //ShootingCollider.IsEnabled = true;
     }
     
+    /*
     void SortTargets()
     {
         RemoveNulls();
@@ -122,4 +124,5 @@ public class Turret : BuildingComponent
 
         return Targets.Count;
     }
+    */
 }

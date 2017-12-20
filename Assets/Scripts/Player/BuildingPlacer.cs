@@ -2,111 +2,111 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Linq;
 
 
 public class BuildingPlacer : MonoBehaviour
 {
-    Player Player;
+    Player player;
+    public BuildingData buildingData;
 
-    BuildingData BuildingToBePlaced;
-
-    public BuildingIndicator BuildingIndicator;
-
-    public Material TransparentMaterial;
+    [SerializeField] Building buildingPrefab;
+    [SerializeField] BuildingKit buildingKitPrefab;
+    [SerializeField] BuildingIndicator indicator;
 
     private void Start()
     {
-        Player = GetComponent<Player>();
+        player = GetComponent<Player>();
     }
 
-    public void InitiateBuilding()
+    public void InitiateBuilding(BuildingData data = null)
     {
-        if (HasEnoughFunds(FieldController.instance.SelectedBuilding))
+        if (data != null)
         {
-            FillPlayerHand();
+            buildingData = data;
         }
+        else {
+            buildingData = new BuildingData();
+        }
+        
+        player.SetPrimaryAction(Place);
+        player.SetSecondaryAction(Reset);
+        player.SetTertaryAction(Build);
+        indicator.gameObject.SetActive(true);
+        indicator.DisplayBuildings(buildingData);
+
+        player.state = Player.PlayerState.Building;
     }
 
-    private bool HasEnoughFunds(BuildingData bd)
+    public void Reset()
     {
-        if(GameController.instance.Scrap >= bd.Cost)
+        buildingData = null;
+        indicator.gameObject.SetActive(false);
+        indicator.Reset();
+        player.SetPrimaryAction(player.Interact);
+        player.SetSecondaryAction(player.EmptyAction);
+        player.SetTertaryAction(player.EmptyAction);
+
+        player.state = Player.PlayerState.Default;
+    }
+
+    public void AddComponent(BuildingComponent component)
+    {
+        if (buildingData == null)
         {
-            return true;
+            InitiateBuilding();
+        }
+
+        if (buildingData.components.Count <= 3)
+        {
+            buildingData.components.Add(component);
+            indicator.DisplayBuildings(buildingData);
         }
         else
         {
-            return false;
+            Debug.LogError("Can't put more");
         }
     }
 
-    public void FillPlayerHand()
+    public void Place()
     {
-        BuildingToBePlaced = FieldController.instance.SelectedBuilding;
-        Building buildingIndicator = Building.CreateBuilding(BuildingIndicator.transform, BuildingToBePlaced);
-        ModifyBuildingToIndicator(buildingIndicator);
-        Player.SetPrimaryAction(PlaceBuilding);
-        Player.SetTertaryAction(AlreadyBuildingError);
+        if (player.interactables.OfType<Building>().Any() || player.interactables.OfType<BuildingKit>().Any())
+        {
+            player.Interact();
+        }
+        else
+        {
+            if (indicator.CanPlace)
+            {
+                BuildingKit kit = Instantiate(buildingKitPrefab).GetComponent<BuildingKit>();
+                kit.data = buildingData;
+                kit.transform.position = indicator.transform.position;
+                kit.transform.rotation = indicator.transform.rotation;
+
+                GameObject game = Instantiate(indicator.indicatorObject, kit.transform);
+                game.transform.rotation = kit.transform.rotation;
+
+                Reset();
+            }
+        }
     }
 
-    private void ModifyBuildingToIndicator(Building buildingIndicator)
+    public void Build()
     {
-        foreach (MeshRenderer renderer in buildingIndicator.GetComponentsInChildren<MeshRenderer>())
+        if (indicator.CanPlace)
         {
-            renderer.material = TransparentMaterial;
-        }
-        foreach (Collider collider in buildingIndicator.GetComponentsInChildren<Collider>())
-        {
-            Destroy(collider);
-        }
-        foreach (NavMeshObstacle obstacle in buildingIndicator.GetComponentsInChildren<NavMeshObstacle>())
-        {
-            Destroy(obstacle);
-        }
+            Building building = Instantiate(buildingPrefab);
+            building.transform.position = indicator.transform.position;
+            building.transform.rotation = indicator.transform.rotation;
 
-        BuildingIndicator.GetComponent<BuildingIndicator>().building = buildingIndicator.gameObject;
-        BuildingIndicator.gameObject.SetActive(true);
+            foreach(BuildingComponent component in buildingData.components)
+            {
+                building.AddComponent(component);
+            }
+
+            Reset();
+        }
     }
 
-    public void PlaceBuilding()
-    {
-        if (!BuildingIndicator.CanPlace && HasEnoughFunds(BuildingToBePlaced))
-        {
-            return;
-        }
-
-        FieldController.instance.AddScrap(-BuildingToBePlaced.Cost);
-
-        BuildingIndicator.Reset();
-
-        Building newBuilding = Building.CreateBuilding(FieldController.instance.PlayingField.transform, BuildingToBePlaced);
-        newBuilding.transform.position = BuildingIndicator.transform.position;
-        newBuilding.transform.rotation = BuildingIndicator.transform.rotation;
-        newBuilding.Place();
-        BuildingToBePlaced = null;
-        Player.SetPrimaryAction(Player.Interact);
-        
-        foreach (Transform x in BuildingIndicator.transform)
-        {
-            Destroy(x.gameObject);
-        }
-        Player.SetTertaryAction(InitiateBuilding);
-    }
-
-    public void CancelBuilding()
-    {
-        BuildingIndicator.Reset();
-        foreach (Transform x in BuildingIndicator.transform)
-        {
-            Destroy(x.gameObject);
-        }
-        Player.SetPrimaryAction(Player.Interact);
-        Player.SetTertaryAction(InitiateBuilding);
-    }
-
-
-    void AlreadyBuildingError()
-    {
-        Debug.Log("You're already building!");
-    }
 }
 

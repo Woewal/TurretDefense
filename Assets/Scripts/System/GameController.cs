@@ -12,7 +12,6 @@ public class GameController : MonoBehaviour {
 	void Awake ()
     {
         SetInstance();
-        SaveState.Initiate();
         
     }
 
@@ -35,8 +34,7 @@ public class GameController : MonoBehaviour {
     void Update () {
 		if(Input.GetButtonDown("Debug"))
         {
-            SaveState.Delete();
-            Debug.Log("deleted save");
+
         }
 	}
 }

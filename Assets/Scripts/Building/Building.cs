@@ -4,145 +4,66 @@ using UnityEngine;
 using System.Linq;
 
 [System.Serializable]
-public class Building : MonoBehaviour {
-    public List<BuildingComponent> Components = new List<BuildingComponent>();
+public class Building : Interactable {
+    public List<BuildingComponent> components = new List<BuildingComponent>();
 
     public Particle DustEmitter;
 
-    public int ScrapCost
-    {
-        get
-        {
-            int cost = 0;
-            foreach(BuildingComponent bc in Components)
-            {
-                if (bc != null)
-                {
-                    Debug.Log("Scrapcost = " + bc.ScrapCost);
-                    cost += bc.ScrapCost;
-                }
-            }
-            return cost;
-        }
-    }
-
     public bool On = true;
 
-    public void Place()
+    public void BuildTurret(BuildingData data)
     {
-        Particle de = Instantiate(DustEmitter, this.transform);
-        de.transform.position = this.transform.position;
-        de.PlayParticle();
+        //Particle de = Instantiate(DustEmitter, this.transform);
+        //de.transform.position = this.transform.position;
+
+        for (int i = 0; i < data.components.Count; i++)
+        {
+            AddComponent(data.components[i]);
+        }
 
         TurnOn();
     }
 
-    public BuildingComponent AddComponent(string componentName, int level = 0, string moduleName = null)
+    public void AddComponent(BuildingComponent component)
     {
-
-        if (Components[level] != null)
+        if (components.Count < 4)
         {
-            Destroy(Components[level].gameObject);
-            Components[level] = null;
+            BuildingComponent newComponent = Instantiate(component, transform);
+            newComponent.transform.Translate(components.Count * BuildingComponent.size * Vector3.up + Vector3.up * 0.8f);
+            components.Add(newComponent);
         }
-
-        BuildingComponent newComponent = (BuildingComponent)Instantiate(GameController.instance.BuildingController.RetrieveComponent(componentName), transform);
-        newComponent.name = GameController.instance.BuildingController.RetrieveComponent(componentName).name;
-        newComponent.transform.Translate(new Vector3(0, level * BuildingComponent.Size / 2 + 0.75f));
-
-        if (moduleName != null)
+        else
         {
-            newComponent.Module = GameController.instance.BuildingController.RetrieveModule(moduleName);
+            Debug.LogError("Too many components");
         }
-
-        while(Components[level] != null)
-        {
-            level++;
-        }
-
-        Components[level] = newComponent;
-
-        return newComponent;
-    }
-
-    public void RemoveComponent(int level)
-    {
-        Destroy(Components[level].gameObject);
-    }
-
-    public void AddToAvailableBuildings()
-    {
-        BuildingData bd = new BuildingData();
-
-        foreach(BuildingComponent bc in Components)
-        {
-            if (bc != null)
-            {
-                bd.AddComponentData(bc.name, bc.Module.name);
-            }
-        }
-        bd.Cost = ScrapCost;
-        SaveState.Instance.AvailableBuildings.Add(bd);
-        SaveState.Save();
-    }
-
-    public void ReplaceExistingBuilding(BuildingData existingBuilding)
-    {
-        BuildingData bd = new BuildingData();
-
-        foreach (BuildingComponent bc in Components)
-        {
-            if(bc != null)
-            {
-                bd.AddComponentData(bc.name, bc.Module.name);
-            }
-            bd.Cost = ScrapCost;
-        }
-
-        var index = SaveState.Instance.AvailableBuildings.FindIndex(a => a == existingBuilding);
-        SaveState.Instance.AvailableBuildings.RemoveAt(index);
-        SaveState.Instance.AvailableBuildings.Insert(index, bd);
-
-        SaveState.Save();
-    }
-
-    public static Building CreateBuilding(Transform parent, BuildingData buildingData = null)
-    {
-        Building newBuilding = Instantiate(GameController.instance.BuildingController.EmptyBuilding, parent);
-
-        newBuilding.InitiateComponents();
-
-        if (buildingData != null)
-        {
-            for (int i = 0; i < buildingData.Components.Count; i++)
-            {
-                newBuilding.AddComponent(buildingData.Components[i].ComponentName, i, buildingData.Components[i].ModuleName);
-            }
-        }
-
-        return newBuilding;
-    }
-
-    private void InitiateComponents()
-    {
-        if (Components.Count == 0)
-        {
-
-            for (int i = 0; i < 3; i++)
-            {
-                Components.Add(null);
-            }
-        }
+        
     }
 
     public void TurnOn()
     {
-        foreach(BuildingComponent component in Components)
+        foreach(BuildingComponent component in components)
         {
             if (component != null)
             {
                 component.TurnOn();
             }
+        }
+    }
+
+    public override void Interact(Player player)
+    {
+    }
+
+    public override void BuildingInteract(Player player)
+    {
+        if(player.buildingPlacer.buildingData.components.Count + components.Count < 4)
+        {
+            foreach(BuildingComponent component in player.buildingPlacer.buildingData.components)
+            {
+                AddComponent(component);
+            }
+
+            player.buildingPlacer.Reset();
         }
     }
 }

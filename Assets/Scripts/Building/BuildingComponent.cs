@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class BuildingComponent : BuildingAttachable
+public abstract class BuildingComponent : MonoBehaviour
 {
-    public static float Size = 1.2f;
+    public static float size = 0.55f;
 
     internal Building Building;
 
-    public BuildingAttachable Module;
+    public GameObject mesh;
 
     public void TurnOn()
     {

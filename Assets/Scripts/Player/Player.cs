@@ -7,21 +7,42 @@ using System;
 
 public class Player : MonoBehaviour
 {
-    public List<Interactable> Interactables = new List<Interactable>();
+    public enum PlayerState { Default, Building }
+
+    public PlayerState state;
+
+    [HideInInspector] public PlayerController controller;
+    [HideInInspector] public BuildingPlacer buildingPlacer;
+
+    public List<Interactable> interactables = new List<Interactable>();
 
     public Action PrimaryAction;
     public Action SecondaryAction;
     public Action TertaryAction;
 
+    private void Start()
+    {
+        state = PlayerState.Default;
+        controller = GetComponent<PlayerController>();
+        buildingPlacer = GetComponent<BuildingPlacer>();
+    }
+
     public void Interact()
     {
-        if (Interactables.Count != 0)
+        if (interactables.Count != 0)
         {
-            Interactables = Interactables.OrderBy(
+            interactables = interactables.OrderBy(
                 x => Vector3.Distance(this.transform.position, x.transform.position)
             ).ToList();
 
-            Interactables[0].Interact(this);
+            if (state == PlayerState.Default)
+            {
+                interactables[0].Interact(this);
+            }
+            else if (state == PlayerState.Building)
+            {
+                interactables[0].BuildingInteract(this);
+            }
         }
     }
 

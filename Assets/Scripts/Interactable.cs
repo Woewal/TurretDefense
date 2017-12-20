@@ -3,13 +3,19 @@ using System.Collections;
 
 public abstract class Interactable : MonoBehaviour
 {
-    public abstract void Interact(Player player);
+    public virtual void Interact(Player player)
+    {
+
+    }
+    public virtual void BuildingInteract(Player player)
+    {
+    }
 
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.tag == "Player")
         {
-            other.gameObject.GetComponent<Player>().Interactables.Add(this);
+            other.gameObject.GetComponent<Player>().interactables.Add(this);
         }
     }
 
@@ -17,7 +23,7 @@ public abstract class Interactable : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            other.gameObject.GetComponent<Player>().Interactables.Remove(this);
+            other.gameObject.GetComponent<Player>().interactables.Remove(this);
         }
     }
 }

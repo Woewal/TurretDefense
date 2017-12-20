@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class FieldController : MonoBehaviour {
 
     public static FieldController instance;
-    public FieldUIController UIController;
     public Camera MainCamera;
     public GameObject PlayingField;
     public EnemySpawnController EnemySpawnController;
@@ -19,14 +18,12 @@ public class FieldController : MonoBehaviour {
     {
         instance = this;
         FindServers();
-        UIController = GameObject.FindObjectOfType<FieldUIController>();
         EnemySpawnController = GetComponent<EnemySpawnController>();
     }
 
     private void Start()
     {
         SetScrap(100);
-        UIController.ChangeScrap(GameController.instance.Scrap);
     }
 
     void FindServers()
@@ -44,13 +41,11 @@ public class FieldController : MonoBehaviour {
     public void AddScrap(int amount)
     {
         GameController.instance.Scrap += amount;
-        UIController.ChangeScrap(GameController.instance.Scrap);
     }
 
     public void SetScrap(int amount)
     {
         GameController.instance.Scrap = amount;
-        UIController.ChangeScrap(GameController.instance.Scrap);
     }
 
     public void WinWave()

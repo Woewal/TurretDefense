@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class Projectile : BuildingModule
+public abstract class Projectile : MonoBehaviour
 {
     GameObject Target;
     public float Speed;

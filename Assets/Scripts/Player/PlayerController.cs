@@ -22,7 +22,6 @@ public class PlayerController : MonoBehaviour
 
         Player.SetPrimaryAction(Player.Interact);
         Player.SetSecondaryAction(Player.EmptyAction);
-        Player.SetTertaryAction(BuildingPlacer.InitiateBuilding);
     }
 
     // Update is called once per frame

@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class BuildingController : MonoBehaviour
 {
-    public BuildingAttachable[] Components;
-    public BuildingAttachable[] Modules;
-
-    public Building EmptyBuilding;
+   /* public Building EmptyBuilding;
 
     public Dictionary<string, BuildingComponent> AvailableComponents = new Dictionary<string, BuildingComponent>();
     public Dictionary<string, BuildingModule> AvailableModules = new Dictionary<string, BuildingModule>();
@@ -33,7 +30,7 @@ public class BuildingController : MonoBehaviour
     public BuildingModule RetrieveModule(string module)
     {
         return AvailableModules[module];
-    }
+    }*/
 }
 
 
