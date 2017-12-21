@@ -106,7 +106,7 @@ public class BuildingIndicator : MonoBehaviour {
 
     void DisplayComponentsOnBuilding(Building building)
     {
-        if (building.components.Count + buildingData.components.Count > 3)
+        if (building.components.Count + buildingData.components.Count > Building.maxComponents)
         {
             return;
         }
@@ -131,7 +131,7 @@ public class BuildingIndicator : MonoBehaviour {
 
     void DisplayComponentsOnKit(BuildingKit kit)
     {
-        if (kit.data.components.Count + buildingData.components.Count > 3)
+        if (kit.data.components.Count + buildingData.components.Count > Building.maxComponents)
         {
             return;
         }

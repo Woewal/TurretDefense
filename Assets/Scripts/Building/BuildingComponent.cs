@@ -4,16 +4,9 @@ using System.Collections;
 public abstract class BuildingComponent : MonoBehaviour
 {
     public static float size = 0.55f;
+    [HideInInspector] public Building building;
 
-    internal Building Building;
-
+    //0 == infinite;
+    public int limitOfInstances;
     public GameObject mesh;
-
-    public void TurnOn()
-    {
-        Building = GetComponentInParent<Building>();
-        StartComponent();
-    }
-
-    public abstract void StartComponent();
 }

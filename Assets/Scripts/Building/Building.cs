@@ -4,12 +4,23 @@ using UnityEngine;
 using System.Linq;
 
 [System.Serializable]
-public class Building : Interactable {
+public class Building : Interactable
+{
+
+    public static int maxComponents = 3;
     public List<BuildingComponent> components = new List<BuildingComponent>();
+
+    public List<Enemy> targetedEnemies = new List<Enemy>();
+    public bool isTargeting = false;
+
+    public delegate void TargetHandler();
+    public event TargetHandler EnableTargeting;
+    public event TargetHandler DisableTargeting;
+    public event TargetHandler UpdateTargeting;
 
     public Particle DustEmitter;
 
-    public bool On = true;
+    public bool on = true;
 
     public void BuildTurret(BuildingData data)
     {
@@ -20,34 +31,22 @@ public class Building : Interactable {
         {
             AddComponent(data.components[i]);
         }
-
-        TurnOn();
     }
 
     public void AddComponent(BuildingComponent component)
     {
-        if (components.Count < 4)
+        if (components.Count <= Building.maxComponents)
         {
             BuildingComponent newComponent = Instantiate(component, transform);
             newComponent.transform.Translate(components.Count * BuildingComponent.size * Vector3.up + Vector3.up * 0.8f);
+            newComponent.building = this;
             components.Add(newComponent);
         }
         else
         {
             Debug.LogError("Too many components");
         }
-        
-    }
 
-    public void TurnOn()
-    {
-        foreach(BuildingComponent component in components)
-        {
-            if (component != null)
-            {
-                component.TurnOn();
-            }
-        }
     }
 
     public override void Interact(Player player)
@@ -56,14 +55,34 @@ public class Building : Interactable {
 
     public override void BuildingInteract(Player player)
     {
-        if(player.buildingPlacer.buildingData.components.Count + components.Count < 4)
+        if (player.buildingPlacer.buildingData.components.Count + components.Count <= Building.maxComponents)
         {
-            foreach(BuildingComponent component in player.buildingPlacer.buildingData.components)
+            foreach (BuildingComponent component in player.buildingPlacer.buildingData.components)
             {
                 AddComponent(component);
             }
 
             player.buildingPlacer.Reset();
+        }
+    }
+
+    public void CheckTargets()
+    {
+        if (targetedEnemies.Count > 0 && !isTargeting)
+        {
+            if (EnableTargeting != null)
+            {
+                EnableTargeting();
+                isTargeting = true;
+            }
+        }
+        else
+        {
+            if (DisableTargeting != null)
+            {
+                DisableTargeting();
+                isTargeting = false;
+            }
         }
     }
 }

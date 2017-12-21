@@ -5,124 +5,62 @@ using System.Linq;
 
 public class Turret : BuildingComponent
 {
-    /*
-    public List<GameObject> Targets = new List<GameObject>();
+    private List<Enemy> targets;
+    float rotationSpeed = 3f;
+    float returnDuration = 2f;
 
-    public Projectile Projectile;
-    public float ShootingInterval;
-    public GameObject ProjectileSpawner;
+    Quaternion originalRotation;
 
-    public ShootingCollider ShootingCollider;
-
-    public float RotationSpeed = 0.4f;
-
-    private GameObject Target;
-
-    private bool IsTargeting = false;*/
-
-    public override void StartComponent()
+    private void Start()
     {
-        //ShootingCollider.IsEnabled = true;
-    }
-    
-    /*
-    void SortTargets()
-    {
-        RemoveNulls();
+        originalRotation = transform.rotation;
 
-        Targets = Targets.OrderBy(
-            x => Vector3.Distance(this.transform.position, x.transform.position)
-        ).ToList();
+        building.EnableTargeting += Target;
+        building.DisableTargeting += StopTarget;
+
+        targets = building.targetedEnemies;
     }
 
-    IEnumerator TargetEnemy()
+    private void Target()
     {
-        
-        IsTargeting = true;
-        StartCoroutine(Shoot());
-
-        while (RemoveNulls() > 0)
-        {
-            if(Target == null)
-            {
-                AssignTarget();
-            }
-            var targetRotation = Quaternion.LookRotation(Target.transform.position - transform.position);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
-            yield return null;
-        }
-        IsTargeting = false;
-        StartCoroutine(Return());
+        StopCoroutine(ResetRotation());
+        StartCoroutine(TargetEnemy());
     }
 
-    private IEnumerator Shoot()
-    {
-        while (IsTargeting)
-        {
-            float currentTime = 0;
-
-            while (currentTime < ShootingInterval)
-            {
-                currentTime += Time.deltaTime;
-                yield return null;
-            }
-
-            if(IsTargeting)
-            {
-                Projectile projectile = Instantiate(Projectile).GetComponent<Projectile>();
-                projectile.transform.position = ProjectileSpawner.transform.position;
-                projectile.InitiateProjectile(Target);
-            }
-            
-
-            yield return null;
-        }
-    }
-
-    private IEnumerator Return()
+    private void StopTarget()
     {
         StopCoroutine(TargetEnemy());
-        StopCoroutine(Shoot());
-        while (transform.rotation != transform.parent.rotation)
+        StartCoroutine(ResetRotation());
+    }
+
+    private void UpdateTarget()
+    {
+
+    }
+
+    private IEnumerator TargetEnemy()
+    {
+        while (targets.Count > 0)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, transform.parent.rotation, RotationSpeed * Time.deltaTime);
+            Vector3 relativePos = targets[0].transform.position - transform.position;
+            Quaternion targetRotation = Quaternion.LookRotation(relativePos);
+
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+
             yield return null;
         }
     }
 
-    public void CheckEnemies()
+    private IEnumerator ResetRotation()
     {
-        if (Targets.Any())
-        {
-            if (!IsTargeting) {
-                AssignTarget();
-                StopCoroutine(Return());
-                StartCoroutine(TargetEnemy());
-            }
-        }
-        else
-        {
-            Target = null;
-        }
-    }
+        float currentTime = 0;
 
-    private void AssignTarget()
-    {
-        SortTargets();
-        Target = Targets[0];
-    }
-
-    private int RemoveNulls()
-    {
-        foreach (GameObject x in Targets.ToList())
+        while (currentTime < returnDuration)
         {
-            if (x == null)
-            {
-                Targets.Remove(x);
-            }
+            transform.rotation = Quaternion.Lerp(transform.rotation, originalRotation, currentTime / returnDuration);
+            currentTime += Time.deltaTime;
+            yield return null;
         }
-
-        return Targets.Count;
+        transform.rotation = originalRotation;
     }
-    */
 }
