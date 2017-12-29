@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Linq;
-
+using Game.Building;
 
 public class BuildingPlacer : MonoBehaviour
 {
@@ -25,10 +25,11 @@ public class BuildingPlacer : MonoBehaviour
         {
             buildingData = data;
         }
-        else {
+        else
+        {
             buildingData = new BuildingData();
         }
-        
+
         player.SetPrimaryAction(Place);
         player.SetSecondaryAction(Reset);
         player.SetTertaryAction(Build);
@@ -76,18 +77,15 @@ public class BuildingPlacer : MonoBehaviour
         }
         else
         {
-            if (indicator.CanPlace)
-            {
-                BuildingKit kit = Instantiate(buildingKitPrefab).GetComponent<BuildingKit>();
-                kit.data = buildingData;
-                kit.transform.position = indicator.transform.position;
-                kit.transform.rotation = indicator.transform.rotation;
+            BuildingKit kit = Instantiate(buildingKitPrefab).GetComponent<BuildingKit>();
+            kit.data = buildingData;
+            kit.transform.position = indicator.transform.position;
+            kit.transform.rotation = indicator.transform.rotation;
 
-                GameObject game = Instantiate(indicator.indicatorObject, kit.transform);
-                game.transform.rotation = kit.transform.rotation;
+            GameObject game = Instantiate(indicator.indicatorObject, kit.transform);
+            game.transform.rotation = kit.transform.rotation;
 
-                Reset();
-            }
+            Reset();
         }
     }
 
@@ -99,7 +97,7 @@ public class BuildingPlacer : MonoBehaviour
             building.transform.position = indicator.transform.position;
             building.transform.rotation = indicator.transform.rotation;
 
-            foreach(BuildingComponent component in buildingData.components)
+            foreach (BuildingComponent component in buildingData.components)
             {
                 building.AddComponent(component);
             }

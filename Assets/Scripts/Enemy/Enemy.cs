@@ -10,29 +10,18 @@ public class Enemy : MonoBehaviour
 {
     public enum Target { Server, Player };
 
-    public float Health;
-    public float MaxHealth = 30f;
+    [HideInInspector] public float health;
+    public float maxHealth = 30f;
 
-    public Image HealthBar;
+    [HideInInspector] public HealthBar healthBar;
 
-    private List<Server> Targets = new List<Server>();
-
-    EnemyNav EnemyNav;
+    EnemyNavigator enemyNav;
 
     private void Start()
     {
-        EnemyNav = GetComponent<EnemyNav>();
+        enemyNav = GetComponent<EnemyNavigator>();
 
-        if(EnemyNav == null)
-        {
-            Debug.LogError("WTf");
-        }
-
-        Targets = FieldController.instance.Servers;
-
-        Health = MaxHealth;
-
-        FindTarget();
+        health = maxHealth;
     }
 
     public void Reevaluate()
@@ -41,39 +30,29 @@ public class Enemy : MonoBehaviour
     }
     
 
-    void FindTarget()
-    {
-        Targets = Targets.OrderBy(
-            x => Vector3.Distance(this.transform.position, x.transform.position)
-        ).ToList();
-
-        EnemyNav.SetTarget(Targets[0].gameObject, Target.Server);
-    }
+    
 
     public void Damage(float amount)
     {
-        StartCoroutine(ChangeHealthBar(Health, Health - amount));
-        Health -= amount;
-        CheckHealth();
-    }
+        float oldHealth = health;
 
-    IEnumerator ChangeHealthBar(float oldHealth, float newHealth)
-    {
-        float currentTime = 0;
-        float endTime = 0.2f;
-
-        while (currentTime < endTime)
+        if (health - amount < 0)
         {
-            HealthBar.fillAmount = Mathf.Lerp(oldHealth / MaxHealth, newHealth / MaxHealth, currentTime / endTime);
-            currentTime += Time.deltaTime;
-            yield return null;
+            health = 0;
+        }
+        else
+        {
+            health -= amount;
         }
 
+        healthBar.SetHealth(oldHealth, health, maxHealth);
+
+        CheckHealth();
     }
 
     void CheckHealth()
     {
-        if (Health <= 0)
+        if (health <= 0)
         {
             Kill();
         }
@@ -81,9 +60,9 @@ public class Enemy : MonoBehaviour
 
     void Kill()
     {
-        FieldController.instance.EnemySpawnController.Enemies.Remove(this);
+        LevelController.instance.EnemySpawnController.Enemies.Remove(this);
         Destroy(gameObject);
-        FieldController.instance.EnemySpawnController.CheckIfAllEnemiesAreDead();
+        LevelController.instance.EnemySpawnController.CheckIfAllEnemiesAreDead();
     }
 
     public void SetTarget(Target Target)

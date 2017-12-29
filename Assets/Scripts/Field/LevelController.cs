@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class FieldController : MonoBehaviour {
+public class LevelController : MonoBehaviour {
 
-    public static FieldController instance;
+    public static LevelController instance;
     public Camera MainCamera;
     public GameObject PlayingField;
     public EnemySpawnController EnemySpawnController;
@@ -17,25 +17,12 @@ public class FieldController : MonoBehaviour {
     private void Awake()
     {
         instance = this;
-        FindServers();
         EnemySpawnController = GetComponent<EnemySpawnController>();
     }
 
     private void Start()
     {
         SetScrap(100);
-    }
-
-    void FindServers()
-    {
-        Servers = new List<Server>();
-
-        GameObject[] servers = GameObject.FindGameObjectsWithTag("Server");
-
-        foreach (GameObject x in servers)
-        {
-            Servers.Add(x.GetComponent<Server>());
-        }
     }
 
     public void AddScrap(int amount)
