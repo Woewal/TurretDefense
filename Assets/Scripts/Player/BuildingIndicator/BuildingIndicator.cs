@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Building;
 
-public class BuildingIndicator : MonoBehaviour {
+public class BuildingIndicator : MonoBehaviour
+{
 
     private List<GameObject> obstacles = new List<GameObject>();
 
@@ -17,11 +19,44 @@ public class BuildingIndicator : MonoBehaviour {
     List<GameObject> buildingPreviewComponents = new List<GameObject>();
     List<GameObject> kitPreviewComponents = new List<GameObject>();
 
-    public bool CanPlace = true;
+    public Dictionary<GameObject, LineRenderer> lineRenderers = new Dictionary<GameObject, LineRenderer>();
+
+    Quaternion fixedRotation;
+
+    public bool CanPlace
+    {
+        get
+        {
+            return obstacles.Count == 0 && lineRenderers.Count == 0;
+        }
+    }
+
+    private void Awake()
+    {
+        fixedRotation = Quaternion.identity;
+    }
+
     private void OnEnable()
     {
         EnableBuilding();
         indicatorObject.SetActive(true);
+    }
+
+    private void LateUpdate()
+    {
+        UpdateBuildingLines();
+    }
+
+    public void UpdateDisplay()
+    {
+        if (CanPlace)
+        {
+            EnableBuilding();
+        }
+        else
+        {
+            DisableBuilding();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -39,14 +74,19 @@ public class BuildingIndicator : MonoBehaviour {
         else if (!other.isTrigger)
         {
             obstacles.Add(other.gameObject);
-            DisableBuilding();
-            CanPlace = false;
+            UpdateDisplay();
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.GetComponent<Building>() || other.GetComponent<BuildingKit>())
+        if (other.GetComponent<Building>())
+        {
+            indicatorObject.SetActive(true);
+            ResetPreviewComponents();
+
+        }
+        else if (other.GetComponent<BuildingKit>())
         {
             indicatorObject.SetActive(true);
             ResetPreviewComponents();
@@ -56,16 +96,15 @@ public class BuildingIndicator : MonoBehaviour {
             obstacles.Remove(other.gameObject);
             if (obstacles.Count == 0)
             {
-                EnableBuilding();
-                CanPlace = true;
+                UpdateDisplay();
             }
         }
-        
+
     }
 
     private void EnableBuilding()
     {
-        foreach(Renderer renderer in GetComponentsInChildren<Renderer>())
+        foreach (Renderer renderer in GetComponentsInChildren<MeshRenderer>())
         {
             renderer.material = enabledMaterial;
         }
@@ -73,7 +112,7 @@ public class BuildingIndicator : MonoBehaviour {
 
     private void DisableBuilding()
     {
-        foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+        foreach (Renderer renderer in GetComponentsInChildren<MeshRenderer>())
         {
             renderer.material = disabledMaterial;
         }
@@ -83,7 +122,7 @@ public class BuildingIndicator : MonoBehaviour {
     {
         buildingData = data;
 
-        foreach(GameObject obj in componentObjects)
+        foreach (GameObject obj in componentObjects)
         {
             Destroy(obj);
         }
@@ -94,7 +133,7 @@ public class BuildingIndicator : MonoBehaviour {
             component.transform.Translate(i * BuildingComponent.size * Vector3.up + Vector3.up * 0.8f);
             componentObjects.Add(component);
         }
-        if(obstacles.Count == 0)
+        if (obstacles.Count == 0)
         {
             EnableBuilding();
         }
@@ -111,7 +150,7 @@ public class BuildingIndicator : MonoBehaviour {
             return;
         }
 
-        for(int i = 0; i < buildingData.components.Count; i++)
+        for (int i = 0; i < buildingData.components.Count; i++)
         {
             GameObject newComponent = Instantiate(buildingData.components[i].mesh);
 
@@ -122,7 +161,7 @@ public class BuildingIndicator : MonoBehaviour {
 
             buildingPreviewComponents.Add(newComponent);
 
-            foreach(Renderer renderer in newComponent.GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in newComponent.GetComponentsInChildren<Renderer>())
             {
                 renderer.material = enabledMaterial;
             }
@@ -156,7 +195,7 @@ public class BuildingIndicator : MonoBehaviour {
 
     void ResetPreviewComponents()
     {
-        foreach(GameObject component in buildingPreviewComponents)
+        foreach (GameObject component in buildingPreviewComponents)
         {
             Destroy(component);
         }
@@ -166,6 +205,28 @@ public class BuildingIndicator : MonoBehaviour {
         }
         buildingPreviewComponents = new List<GameObject>();
         kitPreviewComponents = new List<GameObject>();
+    }
+
+    void UpdateBuildingLines()
+    {
+        if (lineRenderers.Count > 0)
+        {
+            foreach (KeyValuePair<GameObject, LineRenderer> item in lineRenderers)
+            {
+                LineRenderer line = item.Value;
+
+                line.transform.rotation = fixedRotation;
+
+                float dist = Vector3.Distance(this.transform.position, item.Key.transform.position);
+
+                Color lineColor = Color.Lerp(Color.red, Color.green, dist / 4);
+
+                line.startColor = lineColor;
+                line.endColor = lineColor;
+
+                line.SetPosition(1, item.Key.transform.position - transform.position);
+            }
+        }
     }
 
     public void Reset()

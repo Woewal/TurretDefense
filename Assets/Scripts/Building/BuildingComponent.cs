@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Game.Building;
 
 public abstract class BuildingComponent : MonoBehaviour
 {

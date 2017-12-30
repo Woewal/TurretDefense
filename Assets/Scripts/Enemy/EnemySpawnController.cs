@@ -81,7 +81,7 @@ public class EnemySpawnController : MonoBehaviour
     {
         if (Enemies.Count == 0 && AllEnemiesSpawned)
         {
-            FieldController.instance.WinWave();
+            LevelController.instance.WinWave();
         }
     }
 }
