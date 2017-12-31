@@ -27,12 +27,12 @@ public class LevelController : MonoBehaviour {
 
     public void AddScrap(int amount)
     {
-        GameController.instance.Scrap += amount;
+        GlobalController.instance.Scrap += amount;
     }
 
     public void SetScrap(int amount)
     {
-        GameController.instance.Scrap = amount;
+        GlobalController.instance.Scrap = amount;
     }
 
     public void WinWave()

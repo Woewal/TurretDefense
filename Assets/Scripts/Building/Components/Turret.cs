@@ -6,10 +6,16 @@ using System.Linq;
 public class Turret : BuildingComponent
 {
     private List<Enemy> targets;
-    float rotationSpeed = 3f;
-    float returnDuration = 2f;
+    [SerializeField] float rotationSpeed = 3f;
+    [SerializeField] float returnDuration = 2f;
+
+    [SerializeField] GameObject bulletEmitter;
+    [SerializeField] GameObject bulletPrefab;
+    [SerializeField] float fireInterval = 1f;
 
     Quaternion originalRotation;
+
+    private Coroutine shootingCoroutine;
 
     private void Start()
     {
@@ -25,22 +31,20 @@ public class Turret : BuildingComponent
     {
         StopCoroutine(ResetRotation());
         StartCoroutine(TargetEnemy());
+        shootingCoroutine = StartCoroutine(Shoot());
     }
 
     private void StopTarget()
     {
         StopCoroutine(TargetEnemy());
         StartCoroutine(ResetRotation());
-    }
-
-    private void UpdateTarget()
-    {
-
+        if (shootingCoroutine != null)
+            StopCoroutine(shootingCoroutine);
     }
 
     private IEnumerator TargetEnemy()
     {
-        while (targets.Count > 0)
+        while (targets.Count > 0 && targets[0] != null)
         {
             Vector3 relativePos = targets[0].transform.position - transform.position;
             Quaternion targetRotation = Quaternion.LookRotation(relativePos);
@@ -49,6 +53,7 @@ public class Turret : BuildingComponent
 
             yield return null;
         }
+        StopTarget();
     }
 
     private IEnumerator ResetRotation()
@@ -62,5 +67,26 @@ public class Turret : BuildingComponent
             yield return null;
         }
         transform.rotation = originalRotation;
+    }
+
+    private IEnumerator Shoot()
+    {
+        while (true)
+        {
+            float currentTime = 0;
+            while (currentTime < fireInterval)
+            {
+                currentTime += Time.deltaTime;
+                yield return null;
+            }
+            Fire();
+        }
+    }
+
+    void Fire()
+    {
+        GameObject bullet = Instantiate(bulletPrefab);
+        bullet.transform.position = bulletEmitter.transform.position;
+        bullet.transform.rotation = bulletEmitter.transform.rotation;
     }
 }

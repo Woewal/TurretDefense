@@ -13,6 +13,8 @@ public class EnemyNavigator : MonoBehaviour
     private Animator animator;
     private Enemy enemy;
 
+    private Health targetHealth;
+
     bool isAttacking = false;
 
     private void Awake()
@@ -55,16 +57,21 @@ public class EnemyNavigator : MonoBehaviour
         this.target = target;
         navAgent.destination = target.transform.position;
         this.targetType = targetType;
+
+        if(targetType == Enemy.Target.Server)
+        {
+            targetHealth = target.GetComponent<Health>();
+        }
     }
 
     private void Update()
     {
-        if (navAgent.remainingDistance < navAgent.stoppingDistance + 0.5f && !isAttacking)
+        if (navAgent.remainingDistance < navAgent.stoppingDistance + 1f && !isAttacking)
         {
             animator.SetBool("Attack", true);
             isAttacking = true;
         }
-        else
+        else if (navAgent.remainingDistance >= navAgent.stoppingDistance + 1f && isAttacking)
         {
             animator.SetBool("Attack", false);
             isAttacking = false;
@@ -73,6 +80,6 @@ public class EnemyNavigator : MonoBehaviour
 
     public void DamageTarget()
     {
-        Debug.Log("myes");
+        targetHealth.Damage(1f);
     }
 }
