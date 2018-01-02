@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameController : MonoBehaviour {
+public class GlobalController : MonoBehaviour {
 
-    public static GameController instance;
+    public static GlobalController instance;
     public BuildingController BuildingController;
     public int Scrap = 100;
 

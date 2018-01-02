@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BillBoard : MonoBehaviour {
+public class BillBoard : MonoBehaviour
+{
     GameObject Target;
 
     private void Start()

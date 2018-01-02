@@ -4,8 +4,18 @@ using System;
 
 public class Bullet : Projectile
 {
-    public override void Fire()
+    private void Update()
     {
-        StartCoroutine(FireInStaticDirection());
+        transform.Translate(Vector3.forward * Speed * Time.deltaTime);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Enemy")
+        {
+            Enemy enemy = other.gameObject.GetComponent<Enemy>();
+            enemy.health.Damage(damage);
+            DestroyProjectile();
+        }
     }
 }

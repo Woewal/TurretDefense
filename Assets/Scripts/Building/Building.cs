@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 namespace Game.Building
 {
@@ -15,10 +16,9 @@ namespace Game.Building
         public List<Enemy> targetedEnemies = new List<Enemy>();
         public bool isTargeting = false;
 
-        public delegate void TargetHandler();
-        public event TargetHandler EnableTargeting;
-        public event TargetHandler DisableTargeting;
-        public event TargetHandler UpdateTargeting;
+        public event Action EnableTargeting;
+        public event Action DisableTargeting;
+        public event Action UpdateTargeting;
 
         public Particle DustEmitter;
 
