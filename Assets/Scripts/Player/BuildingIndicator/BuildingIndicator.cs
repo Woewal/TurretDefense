@@ -232,6 +232,11 @@ public class BuildingIndicator : MonoBehaviour
     public void Reset()
     {
         obstacles.Clear();
+        foreach (KeyValuePair<GameObject, LineRenderer> item in lineRenderers)
+        {
+            Destroy(item.Value.gameObject);
+        }
+        lineRenderers.Clear();
         ResetPreviewComponents();
         gameObject.SetActive(false);
     }

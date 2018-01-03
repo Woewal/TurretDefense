@@ -1,24 +1,17 @@
 fileFormatVersion: 2
-guid: ab682e1f45d7b024899b40502fd79c84
-timeCreated: 1513415911
+guid: ed3eb0d7eb7742442a4cfbdd3a1be03b
+timeCreated: 1514990779
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: Cube
-    100002: Cylinder
-    100004: //RootNode
-    400000: Cube
-    400002: Cylinder
-    400004: //RootNode
-    2300000: Cube
-    2300002: Cylinder
-    3300000: Cube
-    3300002: Cylinder
-    4300000: Cylinder
-    4300002: Cube
-    7400000: Default Take
-    9500000: //RootNode
+    100000: Turret
+    100002: //RootNode
+    400000: Turret
+    400002: //RootNode
+    2300000: Turret
+    3300000: Turret
+    4300000: Turret
   materials:
     importMaterials: 1
     materialName: 0
@@ -83,7 +76,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

@@ -24,6 +24,11 @@ namespace Game.Building
 
         public bool on = true;
 
+        private void Start()
+        {
+            UpdateTargeting += CheckTargets;
+        }
+
         public void BuildTurret(BuildingData data)
         {
             //Particle de = Instantiate(DustEmitter, this.transform);
@@ -78,7 +83,7 @@ namespace Game.Building
                     isTargeting = true;
                 }
             }
-            else
+            else if (targetedEnemies.Count == 0 && isTargeting)
             {
                 if (DisableTargeting != null)
                 {
@@ -86,6 +91,13 @@ namespace Game.Building
                     isTargeting = false;
                 }
             }
+        }
+
+        public void SortEnemies()
+        {
+            targetedEnemies = targetedEnemies.OrderBy(
+                x => Vector3.Distance(transform.position, x.transform.position)
+            ).ToList();
         }
     }
 }

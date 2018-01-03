@@ -9,7 +9,7 @@ public class EnemyNavigator : MonoBehaviour
     public Enemy.Target targetType;
     private NavMeshAgent navAgent;
     private GameObject target;
-    private List<GameObject> targets;
+    private List<GameObject> targets = new List<GameObject>();
     private Animator animator;
     private Enemy enemy;
 
@@ -27,19 +27,15 @@ public class EnemyNavigator : MonoBehaviour
     private void Start()
     {
         FindTargets();
-        SelectTarget();
+        //SelectTarget();
     }
 
     void FindTargets()
     {
-        targets = new List<GameObject>();
-
         if(targetType == Enemy.Target.Server)
         {
-            foreach(Server server in LevelController.instance.Servers)
-            {
-                targets.Add(server.gameObject);
-            }
+            target = GlobalController.instance.levelController.server.gameObject;
+            SetTarget(target, targetType);
         }
     }
 

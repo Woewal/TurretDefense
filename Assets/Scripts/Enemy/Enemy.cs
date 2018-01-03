@@ -14,6 +14,11 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
+        
+    }
+
+    public void Initiate()
+    {
         enemyNav = GetComponent<EnemyNavigator>();
         health = GetComponent<Health>();
         health.ZeroHealth += Kill;
@@ -21,8 +26,8 @@ public class Enemy : MonoBehaviour
 
     void Kill()
     {
-        LevelController.instance.EnemySpawnController.Enemies.Remove(this);
+        GlobalController.instance.levelController.remainingEnemies.Remove(this);
         Destroy(gameObject);
-        LevelController.instance.EnemySpawnController.CheckIfAllEnemiesAreDead();
+        GlobalController.instance.levelController.CheckRemainingEnemies();
     }
 }

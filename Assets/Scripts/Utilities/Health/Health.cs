@@ -7,14 +7,13 @@ public class Health : MonoBehaviour
     HealthBar healthBar;
 
     [Header("Stats")]
-    [SerializeField]
-    float maxHealth;
+    [SerializeField] float maxHealth = 20;
     float currentHealth;
 
     [Header("Instantiating behaviour")]
     [SerializeField]
-    HealthBar healthBarPrefab;
-    [SerializeField] Transform healthBarParent;
+    HealthBar healthBarPrefab = null;
+    [SerializeField] Transform healthBarParent = null;
 
     public event Action ZeroHealth;
 
@@ -29,7 +28,7 @@ public class Health : MonoBehaviour
     {
         float oldHealth = currentHealth;
 
-        if (currentHealth - amount < 0)
+        if (currentHealth - amount <= 0)
         {
             currentHealth = 0;
             ZeroHealth();

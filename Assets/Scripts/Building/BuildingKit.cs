@@ -17,7 +17,7 @@ public class BuildingKit : Interactable
 
     public override void BuildingInteract(Player player)
     {
-        if (player.buildingPlacer.buildingData.components.Count + data.components.Count < Building.maxComponents)
+        if (player.buildingPlacer.buildingData.components.Count + data.components.Count <= Building.maxComponents)
         {
             for (int i = 0; i < player.buildingPlacer.buildingData.components.Count; i++)
             {

@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class GlobalController : MonoBehaviour {
 
-    public static GlobalController instance;
-    public BuildingController BuildingController;
-    public int Scrap = 100;
+    [HideInInspector] public static GlobalController instance;
+    [HideInInspector] public BuildingController buildingController;
+    [HideInInspector] public LevelController levelController;
+
+    public GameSettings gameSettings;
 
 	// Use this for initialization
 	void Awake ()
     {
         SetInstance();
-        
+        levelController = GetComponent<LevelController>();
     }
 
     private void SetInstance()
@@ -27,7 +29,7 @@ public class GlobalController : MonoBehaviour {
             Destroy(this);
         }
 
-        BuildingController = GetComponent<BuildingController>();
+        buildingController = GetComponent<BuildingController>();
     }
 
     // Update is called once per frame

@@ -7,6 +7,8 @@ public abstract class BuildingComponent : MonoBehaviour
     public static float size = 0.55f;
     [HideInInspector] public Building building;
 
+    public int cost;
+
     //0 == infinite;
     public int limitOfInstances;
     public GameObject mesh;
