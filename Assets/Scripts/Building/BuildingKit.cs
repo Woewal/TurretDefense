@@ -23,7 +23,7 @@ public class BuildingKit : Interactable
             {
                 GameObject newComponent = Instantiate(player.buildingPlacer.buildingData.components[i].mesh, transform);
 
-                Vector3 height = (data.components.Count - 1 + i + 1) * BuildingComponent.size * Vector3.up + Vector3.up * 0.8f;
+                Vector3 height = (data.components.Count - 1 + i + 1) * BuildingComponent.size * Vector3.up + Vector3.up * Building.baseHeight;
 
                 newComponent.transform.position = new Vector3(transform.position.x, height.y, transform.position.z);
 

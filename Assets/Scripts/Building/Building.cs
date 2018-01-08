@@ -9,7 +9,7 @@ namespace Game.Building
     [System.Serializable]
     public class Building : Interactable
     {
-
+        public static float baseHeight = 0.7f;
         public static int maxComponents = 3;
         public List<BuildingComponent> components = new List<BuildingComponent>();
 
@@ -45,7 +45,7 @@ namespace Game.Building
             if (components.Count <= Building.maxComponents)
             {
                 BuildingComponent newComponent = Instantiate(component, transform);
-                newComponent.transform.Translate(components.Count * BuildingComponent.size * Vector3.up + Vector3.up * 0.8f);
+                newComponent.transform.Translate(components.Count * BuildingComponent.size * Vector3.up + Vector3.up * baseHeight);
                 newComponent.building = this;
                 components.Add(newComponent);
             }

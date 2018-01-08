@@ -15,6 +15,11 @@ public class GlobalController : MonoBehaviour {
     {
         SetInstance();
         levelController = GetComponent<LevelController>();
+
+        Vector2 origin = new Vector2(-1, -1);
+        Vector2 direction = new Vector2(3, 3);
+
+        Debug.Log(direction - origin);
     }
 
     private void SetInstance()

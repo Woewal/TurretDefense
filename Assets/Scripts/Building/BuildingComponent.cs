@@ -4,7 +4,7 @@ using Game.Building;
 
 public abstract class BuildingComponent : MonoBehaviour
 {
-    public static float size = 0.55f;
+    public static float size = 0.6f;
     [HideInInspector] public Building building;
 
     public int cost;
@@ -12,4 +12,6 @@ public abstract class BuildingComponent : MonoBehaviour
     //0 == infinite;
     public int limitOfInstances;
     public GameObject mesh;
+
+
 }
