@@ -9,6 +9,7 @@ public class BuildingPlacer : MonoBehaviour
 {
     Player player;
     public BuildingData buildingData;
+    public Building building;
 
     [SerializeField] Building buildingPrefab;
     [SerializeField] BuildingKit buildingKitPrefab;
@@ -19,29 +20,33 @@ public class BuildingPlacer : MonoBehaviour
         player = GetComponent<Player>();
     }
 
-    public void InitiateBuilding(BuildingData data = null)
+    public void InitiateBuilding(Building newBuilding = null)
     {
-        if (data != null)
+        if (newBuilding != null)
         {
-            buildingData = data;
+            building = Instantiate(newBuilding, indicator.transform);
+            building.transform.position = indicator.transform.position;
+            building.transform.rotation = indicator.transform.rotation;
         }
         else
         {
-            buildingData = new BuildingData();
+            //indicator.DisplayBuildings(buildingData);
+            building = Instantiate(buildingPrefab, indicator.transform);
         }
 
-        player.SetPrimaryAction(Place);
+        player.SetPrimaryAction(Build);
         player.SetSecondaryAction(Reset);
-        player.SetTertaryAction(Build);
         indicator.gameObject.SetActive(true);
-        indicator.DisplayBuildings(buildingData);
+
+        building.GetComponent<Collider>().isTrigger = true;
 
         player.state = Player.PlayerState.Building;
     }
 
     public void Reset()
     {
-        buildingData = null;
+        Destroy(building.gameObject);
+        building = null;
         indicator.gameObject.SetActive(false);
         indicator.Reset();
         player.SetPrimaryAction(player.Interact);
@@ -53,15 +58,16 @@ public class BuildingPlacer : MonoBehaviour
 
     public void AddComponent(BuildingComponent component)
     {
-        if (buildingData == null)
+        if (building == null)
         {
             InitiateBuilding();
         }
 
-        if (buildingData.components.Count <= 3)
+        if (building.components.Count <= 3)
         {
-            buildingData.components.Add(component);
-            indicator.DisplayBuildings(buildingData);
+            //buildingData.components.Add(component);
+            building.AddComponent(component);
+            //indicator.DisplayBuildings(buildingData);
         }
         else
         {
@@ -91,16 +97,20 @@ public class BuildingPlacer : MonoBehaviour
 
     public void Build()
     {
-        if (indicator.CanPlace)
+        if (player.interactables.OfType<Building>().Any())
         {
-            Building building = Instantiate(buildingPrefab);
-            building.transform.position = indicator.transform.position;
-            building.transform.rotation = indicator.transform.rotation;
+            Building newBuilding = player.interactables.OfType<Building>().First();
+            newBuilding.AddComponents(building.components);
 
-            foreach (BuildingComponent component in buildingData.components)
-            {
-                building.AddComponent(component);
-            }
+            Reset();
+        }
+        else if (indicator.CanPlace)
+        {
+            Building newBuilding = Instantiate(building);
+            newBuilding.GetComponent<Collider>().isTrigger = false;
+            newBuilding.transform.position = indicator.transform.position;
+            newBuilding.transform.rotation = indicator.transform.rotation;
+            //newBuilding.AddComponents(building.components);
 
             Reset();
         }

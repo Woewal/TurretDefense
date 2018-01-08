@@ -45,19 +45,31 @@ namespace Game.Building
             if (components.Count <= Building.maxComponents)
             {
                 BuildingComponent newComponent = Instantiate(component, transform);
-                newComponent.transform.Translate(components.Count * BuildingComponent.size * Vector3.up + Vector3.up * baseHeight);
+                newComponent.transform.position = new Vector3(newComponent.transform.position.x, components.Count * BuildingComponent.size + baseHeight, newComponent.transform.position.z);
                 newComponent.building = this;
                 components.Add(newComponent);
+            }
+        }
+
+        public void AddComponents(List<BuildingComponent> newComponents)
+        {
+            if (components.Count + newComponents.Count <= Building.maxComponents)
+            {
+                foreach(BuildingComponent component in newComponents)
+                {
+                    AddComponent(component);
+                }
             }
             else
             {
                 Debug.LogError("Too many components");
             }
-
         }
 
         public override void Interact(Player player)
         {
+            player.buildingPlacer.InitiateBuilding(this);
+            Destroy(this.gameObject);
         }
 
         public override void BuildingInteract(Player player)

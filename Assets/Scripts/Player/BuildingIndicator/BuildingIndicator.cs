@@ -38,7 +38,7 @@ public class BuildingIndicator : MonoBehaviour
 
     private void OnEnable()
     {
-        EnableBuilding();
+        //EnableBuilding();
         indicatorObject.SetActive(true);
     }
 
@@ -64,17 +64,17 @@ public class BuildingIndicator : MonoBehaviour
         if (other.GetComponent<Building>())
         {
             indicatorObject.SetActive(false);
-            DisplayComponentsOnBuilding(other.GetComponent<Building>());
+            //DisplayComponentsOnBuilding(other.GetComponent<Building>());
         }
         else if (other.GetComponent<BuildingKit>())
         {
             indicatorObject.SetActive(false);
-            DisplayComponentsOnKit(other.GetComponent<BuildingKit>());
+            //DisplayComponentsOnKit(other.GetComponent<BuildingKit>());
         }
         else if (!other.isTrigger)
         {
             obstacles.Add(other.gameObject);
-            UpdateDisplay();
+            //UpdateDisplay();
         }
     }
 
@@ -83,20 +83,20 @@ public class BuildingIndicator : MonoBehaviour
         if (other.GetComponent<Building>())
         {
             indicatorObject.SetActive(true);
-            ResetPreviewComponents();
+            //ResetPreviewComponents();
 
         }
         else if (other.GetComponent<BuildingKit>())
         {
             indicatorObject.SetActive(true);
-            ResetPreviewComponents();
+            //ResetPreviewComponents();
         }
         else if (!other.isTrigger)
         {
             obstacles.Remove(other.gameObject);
             if (obstacles.Count == 0)
             {
-                UpdateDisplay();
+                //UpdateDisplay();
             }
         }
 
@@ -135,11 +135,11 @@ public class BuildingIndicator : MonoBehaviour
         }
         if (obstacles.Count == 0)
         {
-            EnableBuilding();
+            //EnableBuilding();
         }
         else
         {
-            DisableBuilding();
+            //DisableBuilding();
         }
     }
 

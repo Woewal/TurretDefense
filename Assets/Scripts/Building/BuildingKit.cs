@@ -10,7 +10,7 @@ public class BuildingKit : Interactable
 
     public override void Interact(Player player)
     {
-        player.buildingPlacer.InitiateBuilding(data);
+        //player.buildingPlacer.InitiateBuilding(data);
         player.interactables.Remove(this);
         Destroy(this.gameObject);
     }

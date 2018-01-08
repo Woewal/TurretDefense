@@ -21,7 +21,7 @@ public class BuildingFinder : MonoBehaviour
         if (other.tag == "Building")
         {
             indicator.lineRenderers.Add(other.gameObject, Instantiate(lineRendererPrefab, indicator.transform).GetComponent<LineRenderer>());
-            indicator.UpdateDisplay();
+            //indicator.UpdateDisplay();
         }
     }
 
@@ -31,7 +31,7 @@ public class BuildingFinder : MonoBehaviour
         {
             Destroy(indicator.lineRenderers[other.gameObject].gameObject);
             indicator.lineRenderers.Remove(other.gameObject);
-            indicator.UpdateDisplay();
+            //indicator.UpdateDisplay();
         }
     }
 }
