@@ -3,6 +3,9 @@ using System.Collections;
 
 public abstract class Interactable : MonoBehaviour
 {
+
+    public Player assignedPlayer;
+
     public virtual void Interact(Player player)
     {
 
@@ -15,7 +18,10 @@ public abstract class Interactable : MonoBehaviour
     {
         if(other.gameObject.tag == "Player")
         {
-            other.gameObject.GetComponent<Player>().interactables.Add(this);
+            if (assignedPlayer != other.gameObject.GetComponent<Player>())
+            {
+                other.gameObject.GetComponent<Player>().interactables.Add(this);
+            }
         }
     }
 

@@ -35,25 +35,32 @@ public class BuildingPlacer : MonoBehaviour
         }
 
         player.SetPrimaryAction(Build);
-        player.SetSecondaryAction(Reset);
+        player.SetSecondaryAction(DestroyCurrentBuilding);
         indicator.gameObject.SetActive(true);
 
-        building.GetComponent<Collider>().isTrigger = true;
+        building.assignedPlayer = player;
+
+        
 
         player.state = Player.PlayerState.Building;
     }
 
-    public void Reset()
+    public void PickUpBuilding(Building newBuilding)
     {
-        Destroy(building.gameObject);
-        building = null;
-        indicator.gameObject.SetActive(false);
-        indicator.Reset();
-        player.SetPrimaryAction(player.Interact);
-        player.SetSecondaryAction(player.EmptyAction);
-        player.SetTertaryAction(player.EmptyAction);
+        building = newBuilding;
+        building.transform.SetParent(indicator.transform);
+        building.transform.position = indicator.transform.position;
+        building.transform.rotation = indicator.transform.rotation;
 
-        player.state = Player.PlayerState.Default;
+        player.SetPrimaryAction(Build);
+        player.SetSecondaryAction(DestroyCurrentBuilding);
+        indicator.gameObject.SetActive(true);
+
+        building.assignedPlayer = player;
+
+        building.SetColliding(false);
+
+        player.state = Player.PlayerState.Building;
     }
 
     public void AddComponent(BuildingComponent component)
@@ -75,45 +82,43 @@ public class BuildingPlacer : MonoBehaviour
         }
     }
 
-    public void Place()
-    {
-        if (player.interactables.OfType<Building>().Any() || player.interactables.OfType<BuildingKit>().Any())
-        {
-            player.Interact();
-        }
-        else
-        {
-            BuildingKit kit = Instantiate(buildingKitPrefab).GetComponent<BuildingKit>();
-            kit.data = buildingData;
-            kit.transform.position = indicator.transform.position;
-            kit.transform.rotation = indicator.transform.rotation;
-
-            GameObject game = Instantiate(indicator.indicatorObject, kit.transform);
-            game.transform.rotation = kit.transform.rotation;
-
-            Reset();
-        }
-    }
-
     public void Build()
     {
-        if (player.interactables.OfType<Building>().Any())
+
+        /*if (player.interactables.OfType<Building>().Any())
         {
             Building newBuilding = player.interactables.OfType<Building>().First();
             newBuilding.AddComponents(building.components);
 
-            Reset();
+            DestroyCurrentBuilding();
         }
-        else if (indicator.CanPlace)
+        else*/ if (indicator.CanPlace)
         {
-            Building newBuilding = Instantiate(building);
-            newBuilding.GetComponent<Collider>().isTrigger = false;
-            newBuilding.transform.position = indicator.transform.position;
-            newBuilding.transform.rotation = indicator.transform.rotation;
-            //newBuilding.AddComponents(building.components);
+            building.transform.parent = player.transform.parent;
+            building.SetColliding(true);
+            building.assignedPlayer = null;
+            player.interactables.Add(building);
 
-            Reset();
+            ResetReferences();
         }
+    }
+
+    public void DestroyCurrentBuilding()
+    {
+        Destroy(building.gameObject);
+        ResetReferences();
+    }
+
+    public void ResetReferences()
+    {
+        building = null;
+        indicator.gameObject.SetActive(false);
+        indicator.Reset();
+        player.SetPrimaryAction(player.Interact);
+        player.SetSecondaryAction(player.EmptyAction);
+        player.SetTertaryAction(player.EmptyAction);
+
+        player.state = Player.PlayerState.Default;
     }
 
 }

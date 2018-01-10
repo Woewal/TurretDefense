@@ -24,6 +24,8 @@ namespace Game.Building
 
         public bool on = true;
 
+        [SerializeField] Collider buildingCollider = null;
+
         private void Start()
         {
             UpdateTargeting += CheckTargets;
@@ -68,20 +70,19 @@ namespace Game.Building
 
         public override void Interact(Player player)
         {
-            player.buildingPlacer.InitiateBuilding(this);
-            Destroy(this.gameObject);
+            player.buildingPlacer.PickUpBuilding(this);
+            this.assignedPlayer = player;
         }
 
         public override void BuildingInteract(Player player)
         {
+            Debug.Log("Wrong");
             if (player.buildingPlacer.buildingData.components.Count + components.Count <= Building.maxComponents)
             {
                 foreach (BuildingComponent component in player.buildingPlacer.buildingData.components)
                 {
                     AddComponent(component);
                 }
-
-                player.buildingPlacer.Reset();
             }
         }
 
@@ -110,6 +111,18 @@ namespace Game.Building
             targetedEnemies = targetedEnemies.OrderBy(
                 x => Vector3.Distance(transform.position, x.transform.position)
             ).ToList();
+        }
+
+        public void SetColliding(bool on)
+        {
+            if (on)
+            {
+                buildingCollider.enabled = true;
+            }
+            else
+            {
+                buildingCollider.enabled = false;
+            }
         }
     }
 }
