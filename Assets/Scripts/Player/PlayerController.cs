@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rgbd;
     public float Speed;
     public float RotationSpeed;
-    Player Player;
+    Player player;
     BuildingPlacer BuildingPlacer;
 
     public Animator Animator;
@@ -16,20 +16,21 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Player = GetComponent<Player>();
+        player = GetComponent<Player>();
         rgbd = GetComponent<Rigidbody>();
         BuildingPlacer = GetComponent<BuildingPlacer>();
 
-        Player.SetPrimaryAction(Player.Interact);
-        Player.SetSecondaryAction(Player.EmptyAction);
+        player.SetPrimaryAction(player.Interact);
+
+        player.SetSecondaryAction(player.EmptyAction);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
+        if (Input.GetAxis("Horizontal" + player.playerNumber) != 0 || Input.GetAxis("Vertical" + player.playerNumber) != 0)
         {
-            MovePlayer(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            MovePlayer(Input.GetAxis("Horizontal" + player.playerNumber), Input.GetAxis("Vertical" + player.playerNumber));
             Animator.SetBool("Running", true);
         }
         else
@@ -37,19 +38,20 @@ public class PlayerController : MonoBehaviour
             Animator.SetBool("Running", false);
         }
 
-        if (Input.GetButtonDown("PrimaryAction"))
+        if (Input.GetButtonDown("PrimaryAction" + player.playerNumber))
         {
-            Player.PrimaryAction();
+            player.PrimaryAction();
         }
 
-        if (Input.GetButtonDown("SecondaryAction"))
+        if (Input.GetButtonDown("SecondaryAction" + player.playerNumber))
         {
-            Player.SecondaryAction();
+            player.SecondaryAction();
         }
 
-        if (Input.GetButtonDown("TertaryAction"))
+        if (Input.GetButtonDown("TertaryAction" + player.playerNumber))
         {
-            Player.TertaryAction();
+            
+            player.TertaryAction();
         }
     }
 
@@ -57,13 +59,8 @@ public class PlayerController : MonoBehaviour
     {
         rgbd.MovePosition(new Vector3(transform.position.x + horizontalSpeed * Speed, 0, transform.position.z + verticalSpeed * Speed));
 
-        //Quaternion Rotation = Quaternion.LookRotation(transform.position - new Vector3(horizontalSpeed, 0, verticalSpeed));
-
         Quaternion Rotation = Quaternion.LookRotation(new Vector3(horizontalSpeed * 3, 0, verticalSpeed * 3));
 
         transform.rotation = Quaternion.Slerp(transform.rotation, Rotation, Time.deltaTime * RotationSpeed);
-
-        //transform.rotation = Quaternion.LookRotation(new Vector3(horizontalSpeed * 3, 0, verticalSpeed * 3));
     }
-
 }

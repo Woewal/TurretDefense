@@ -18,17 +18,18 @@ namespace Game.Building
 
         public event Action EnableTargeting;
         public event Action DisableTargeting;
-        public event Action UpdateTargeting;
+
+        public event Action EnemyIsKilled;
 
         public Particle DustEmitter;
 
-        public bool on = true;
+        public Energy energy;
 
         [SerializeField] Collider buildingCollider = null;
 
         private void Start()
         {
-            UpdateTargeting += CheckTargets;
+            energy = GetComponent<Energy>();
         }
 
         public void BuildTurret(BuildingData data)
@@ -74,20 +75,10 @@ namespace Game.Building
             this.assignedPlayer = player;
         }
 
-        public override void BuildingInteract(Player player)
-        {
-            Debug.Log("Wrong");
-            if (player.buildingPlacer.buildingData.components.Count + components.Count <= Building.maxComponents)
-            {
-                foreach (BuildingComponent component in player.buildingPlacer.buildingData.components)
-                {
-                    AddComponent(component);
-                }
-            }
-        }
-
         public void CheckTargets()
         {
+            targetedEnemies.RemoveAll(item => item == null);
+
             if (targetedEnemies.Count > 0 && !isTargeting)
             {
                 if (EnableTargeting != null)

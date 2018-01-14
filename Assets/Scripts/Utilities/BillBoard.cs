@@ -13,6 +13,6 @@ public class BillBoard : MonoBehaviour
 
     private void Update()
     {
-        transform.LookAt(Target.transform);
+        transform.rotation = Quaternion.LookRotation(Target.transform.position - this.transform.position);
     }
 }

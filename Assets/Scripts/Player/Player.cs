@@ -7,6 +7,8 @@ using System;
 
 public class Player : MonoBehaviour
 {
+    public int playerNumber;
+
     public enum PlayerState { Default, Building }
 
     public PlayerState state;
@@ -27,6 +29,14 @@ public class Player : MonoBehaviour
         buildingPlacer = GetComponent<BuildingPlacer>();
     }
 
+    private void Update()
+    {
+        foreach(Interactable mlem in interactables)
+        {
+            Debug.DrawLine(transform.position, mlem.transform.position, Color.green, 0.1f);
+        }
+    }
+
     public void Interact()
     {
         if (interactables.Count != 0)
@@ -38,10 +48,6 @@ public class Player : MonoBehaviour
             if (state == PlayerState.Default)
             {
                 interactables[0].Interact(this);
-            }
-            else if (state == PlayerState.Building)
-            {
-                interactables[0].BuildingInteract(this);
             }
         }
     }

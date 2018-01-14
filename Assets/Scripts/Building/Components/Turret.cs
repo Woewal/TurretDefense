@@ -6,62 +6,64 @@ using System.Linq;
 public class Turret : BuildingComponent
 {
     private List<Enemy> targets;
-    [SerializeField] float rotationSpeed = 3f;
-    [SerializeField] float returnDuration = 2f;
 
     [SerializeField] GameObject bulletEmitter;
     [SerializeField] GameObject bulletPrefab;
-    [SerializeField] float fireInterval = 1f;
+    [SerializeField] float highEnergyInterval = 0.5f;
+    [SerializeField] float lowEnergyInterval = 3;
 
     Quaternion originalRotation;
 
-    private Coroutine targetingCoroutine;
-    private Coroutine resettingCoroutine;
-    private Coroutine shootingCoroutine;
+    Coroutine shootingCoroutine;
 
     private void Start()
     {
         originalRotation = transform.rotation;
 
         building.EnableTargeting += Target;
-        building.DisableTargeting += StopTarget;
+        building.DisableTargeting += StopFollow;
 
         targets = building.targetedEnemies;
     }
 
     private void Update()
     {
-        if(targets.Count > 0)
+        if (targets.Count > 0)
         {
-            if(targets[0] != null)
+            if (targets[0] != null)
             {
                 Debug.DrawLine(bulletEmitter.transform.position, targets[0].transform.position, Color.black, Time.deltaTime);
             }
         }
     }
 
+    public void StopFollow()
+    {
+        if (currentCoroutine != null)
+            StopCoroutine(currentCoroutine);
+        if(shootingCoroutine != null)
+            StopCoroutine(shootingCoroutine);
+        currentCoroutine = StartCoroutine(ReturnRotationRoutine());
+
+    }
+
     private void Target()
     {
-        StopCoroutine(ResetRotation());
-        targetingCoroutine = StartCoroutine(TargetEnemy());
+        currentCoroutine = StartCoroutine(FollowTargetRoutine());
         shootingCoroutine = StartCoroutine(Shoot());
     }
 
-    private void StopTarget()
+    public IEnumerator FollowTargetRoutine()
     {
-        if(targetingCoroutine != null)
-            StopCoroutine(TargetEnemy());
-        resettingCoroutine = StartCoroutine(ResetRotation());
-        if (shootingCoroutine != null)
-            StopCoroutine(shootingCoroutine);
-    }
-
-    private IEnumerator TargetEnemy()
-    {
-        while(targets.Count > 0)
+        while (true)
         {
-            while (targets.Count > 0 && targets[0] != null)
+            if(targets.Count > 0)
             {
+                if (targets[0] == null)
+                {
+                    building.CheckTargets();
+                    yield return null;
+                }
                 Vector3 relativePos = (targets[0].transform.position + Vector3.up * .5f) - transform.position;
                 Quaternion targetRotation = Quaternion.LookRotation(relativePos);
 
@@ -69,38 +71,24 @@ public class Turret : BuildingComponent
 
                 yield return null;
             }
-            if(targets.Count > 0)
+            else
             {
-                if (targets[0] == null)
-                {
-                    targets.Remove(targets[0]);
-                    building.CheckTargets();
-                }
+                building.CheckTargets();
+                yield return null;
             }
-            yield return null;
         }
-        StopTarget();
     }
 
-    private IEnumerator ResetRotation()
-    {
-        float currentTime = 0;
 
-        while (currentTime < returnDuration)
-        {
-            transform.rotation = Quaternion.Lerp(transform.rotation, originalRotation, currentTime / returnDuration);
-            currentTime += Time.deltaTime;
-            yield return null;
-        }
-        transform.rotation = originalRotation;
-    }
 
     private IEnumerator Shoot()
     {
         while (true)
         {
+            float interval = Mathf.Lerp(lowEnergyInterval, highEnergyInterval, building.energy.CurrentEnergy);
+
             float currentTime = 0;
-            while (currentTime < fireInterval)
+            while (currentTime < interval)
             {
                 currentTime += Time.deltaTime;
                 yield return null;
@@ -109,9 +97,23 @@ public class Turret : BuildingComponent
         }
     }
 
+    public IEnumerator ReturnRotationRoutine()
+    {
+        float currentTime = 0;
+        Quaternion currentRotation = transform.localRotation;
+
+        while (currentTime < returnDuration)
+        {
+            transform.localRotation = Quaternion.Slerp(currentRotation, Quaternion.identity, currentTime / returnDuration);
+            currentTime += Time.deltaTime;
+            yield return null;
+        }
+    }
+
     void Fire()
     {
         GameObject bullet = Instantiate(bulletPrefab);
+        ChangeEnergy(-1f);
         bullet.transform.position = bulletEmitter.transform.position;
         bullet.transform.rotation = bulletEmitter.transform.rotation;
     }

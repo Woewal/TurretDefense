@@ -66,11 +66,6 @@ public class BuildingIndicator : MonoBehaviour
             indicatorObject.SetActive(false);
             //DisplayComponentsOnBuilding(other.GetComponent<Building>());
         }
-        else if (other.GetComponent<BuildingKit>())
-        {
-            indicatorObject.SetActive(false);
-            //DisplayComponentsOnKit(other.GetComponent<BuildingKit>());
-        }
         else if (!other.isTrigger)
         {
             obstacles.Add(other.gameObject);
@@ -85,11 +80,6 @@ public class BuildingIndicator : MonoBehaviour
             indicatorObject.SetActive(true);
             //ResetPreviewComponents();
 
-        }
-        else if (other.GetComponent<BuildingKit>())
-        {
-            indicatorObject.SetActive(true);
-            //ResetPreviewComponents();
         }
         else if (!other.isTrigger)
         {
@@ -160,31 +150,6 @@ public class BuildingIndicator : MonoBehaviour
             newComponent.transform.rotation = building.transform.rotation;
 
             buildingPreviewComponents.Add(newComponent);
-
-            foreach (Renderer renderer in newComponent.GetComponentsInChildren<Renderer>())
-            {
-                renderer.material = enabledMaterial;
-            }
-        }
-    }
-
-    void DisplayComponentsOnKit(BuildingKit kit)
-    {
-        if (kit.data.components.Count + buildingData.components.Count > Building.maxComponents)
-        {
-            return;
-        }
-
-        for (int i = 0; i < buildingData.components.Count; i++)
-        {
-            GameObject newComponent = Instantiate(buildingData.components[i].mesh);
-
-            Vector3 height = (kit.data.components.Count - 1 + i + 1) * BuildingComponent.size * Vector3.up + Vector3.up * 0.8f;
-
-            newComponent.transform.position = new Vector3(kit.transform.position.x, height.y, kit.transform.position.z);
-            newComponent.transform.rotation = kit.transform.rotation;
-
-            kitPreviewComponents.Add(newComponent);
 
             foreach (Renderer renderer in newComponent.GetComponentsInChildren<Renderer>())
             {

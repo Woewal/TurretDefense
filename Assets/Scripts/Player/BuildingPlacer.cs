@@ -12,7 +12,6 @@ public class BuildingPlacer : MonoBehaviour
     public Building building;
 
     [SerializeField] Building buildingPrefab;
-    [SerializeField] BuildingKit buildingKitPrefab;
     [SerializeField] BuildingIndicator indicator;
 
     private void Start()
@@ -34,15 +33,7 @@ public class BuildingPlacer : MonoBehaviour
             building = Instantiate(buildingPrefab, indicator.transform);
         }
 
-        player.SetPrimaryAction(Build);
-        player.SetSecondaryAction(DestroyCurrentBuilding);
-        indicator.gameObject.SetActive(true);
-
-        building.assignedPlayer = player;
-
-        
-
-        player.state = Player.PlayerState.Building;
+        SetReferences();
     }
 
     public void PickUpBuilding(Building newBuilding)
@@ -52,11 +43,17 @@ public class BuildingPlacer : MonoBehaviour
         building.transform.position = indicator.transform.position;
         building.transform.rotation = indicator.transform.rotation;
 
+        SetReferences();
+    }
+
+    void SetReferences()
+    {
         player.SetPrimaryAction(Build);
         player.SetSecondaryAction(DestroyCurrentBuilding);
         indicator.gameObject.SetActive(true);
 
         building.assignedPlayer = player;
+        player.interactables.Remove(building);
 
         building.SetColliding(false);
 
@@ -85,19 +82,17 @@ public class BuildingPlacer : MonoBehaviour
     public void Build()
     {
 
-        /*if (player.interactables.OfType<Building>().Any())
+        if (player.interactables.OfType<Building>().Any())
         {
             Building newBuilding = player.interactables.OfType<Building>().First();
             newBuilding.AddComponents(building.components);
-
             DestroyCurrentBuilding();
         }
-        else*/ if (indicator.CanPlace)
+        else if (indicator.CanPlace)
         {
-            building.transform.parent = player.transform.parent;
+            building.transform.parent = null;
             building.SetColliding(true);
             building.assignedPlayer = null;
-            player.interactables.Add(building);
 
             ResetReferences();
         }
