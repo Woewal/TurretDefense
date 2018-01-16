@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Waves>
-  <Wave id="1">
-    <Enemy name="Drone" amount="9"></Enemy>
-  </Wave>
-</Waves>

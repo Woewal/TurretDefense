@@ -14,42 +14,24 @@ public class Player : MonoBehaviour
     public PlayerState state;
 
     [HideInInspector] public PlayerController controller;
-    [HideInInspector] public BuildingPlacer buildingPlacer;
 
-    public List<Interactable> interactables = new List<Interactable>();
+    public InteractionController interactionController;
 
     public Action PrimaryAction;
     public Action SecondaryAction;
     public Action TertaryAction;
 
+    public PlacementIndicator indicator; 
+
     private void Start()
     {
         state = PlayerState.Default;
         controller = GetComponent<PlayerController>();
-        buildingPlacer = GetComponent<BuildingPlacer>();
-    }
+        indicator = GetComponentInChildren<PlacementIndicator>();
+        interactionController = GetComponentInChildren<InteractionController>();
+        ResetPlayerActions();
 
-    private void Update()
-    {
-        foreach(Interactable mlem in interactables)
-        {
-            Debug.DrawLine(transform.position, mlem.transform.position, Color.green, 0.1f);
-        }
-    }
-
-    public void Interact()
-    {
-        if (interactables.Count != 0)
-        {
-            interactables = interactables.OrderBy(
-                x => Vector3.Distance(this.transform.position, x.transform.position)
-            ).ToList();
-
-            if (state == PlayerState.Default)
-            {
-                interactables[0].Interact(this);
-            }
-        }
+        GlobalController.instance.levelController.cameraController.targets.Add(transform);
     }
 
     public void SetPrimaryAction(Action action)
@@ -65,6 +47,11 @@ public class Player : MonoBehaviour
     public void SetTertaryAction(Action action)
     {
         TertaryAction = action;
+    }
+
+    public void ResetPlayerActions()
+    {
+        SetPrimaryAction(interactionController.Interact);
     }
 
     public void EmptyAction()

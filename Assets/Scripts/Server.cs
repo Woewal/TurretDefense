@@ -15,7 +15,7 @@ public class Server : MonoBehaviour {
     // Use this for initialization
     void Start () {
         health = GetComponent<Health>();
-        health.ZeroHealth += GlobalController.instance.levelController.ResetLevel;
+        health.ZeroHealth += GlobalController.instance.levelController.ExitLevel;
 	}
 	
 	// Update is called once per frame

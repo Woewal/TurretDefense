@@ -9,7 +9,6 @@ public class PlayerController : MonoBehaviour
     public float Speed;
     public float RotationSpeed;
     Player player;
-    BuildingPlacer BuildingPlacer;
 
     public Animator Animator;
 
@@ -18,11 +17,6 @@ public class PlayerController : MonoBehaviour
     {
         player = GetComponent<Player>();
         rgbd = GetComponent<Rigidbody>();
-        BuildingPlacer = GetComponent<BuildingPlacer>();
-
-        player.SetPrimaryAction(player.Interact);
-
-        player.SetSecondaryAction(player.EmptyAction);
     }
 
     // Update is called once per frame

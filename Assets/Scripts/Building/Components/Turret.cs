@@ -12,6 +12,9 @@ public class Turret : BuildingComponent
     [SerializeField] float highEnergyInterval = 0.5f;
     [SerializeField] float lowEnergyInterval = 3;
 
+    float currentTime = 0;
+    float currentInterval;
+
     Quaternion originalRotation;
 
     Coroutine shootingCoroutine;
@@ -20,100 +23,62 @@ public class Turret : BuildingComponent
     {
         originalRotation = transform.rotation;
 
-        building.EnableTargeting += Target;
-        building.DisableTargeting += StopFollow;
-
         targets = building.targetedEnemies;
+
+        currentInterval = Mathf.Lerp(lowEnergyInterval, highEnergyInterval, building.energy.CurrentEnergyLerp);
     }
 
     private void Update()
     {
-        if (targets.Count > 0)
+        if (building.targetedEnemies.Count > 0)
         {
-            if (targets[0] != null)
-            {
-                Debug.DrawLine(bulletEmitter.transform.position, targets[0].transform.position, Color.black, Time.deltaTime);
-            }
+            FollowTarget();
+            Shoot();
+        }
+        else
+        {
+            StopFollow();
         }
     }
 
     public void StopFollow()
     {
-        if (currentCoroutine != null)
-            StopCoroutine(currentCoroutine);
-        if(shootingCoroutine != null)
-            StopCoroutine(shootingCoroutine);
-        currentCoroutine = StartCoroutine(ReturnRotationRoutine());
 
     }
 
-    private void Target()
+    public void FollowTarget()
     {
-        currentCoroutine = StartCoroutine(FollowTargetRoutine());
-        shootingCoroutine = StartCoroutine(Shoot());
-    }
 
-    public IEnumerator FollowTargetRoutine()
-    {
-        while (true)
+        if (targets[0] == null)
         {
-            if(targets.Count > 0)
-            {
-                if (targets[0] == null)
-                {
-                    building.CheckTargets();
-                    yield return null;
-                }
-                Vector3 relativePos = (targets[0].transform.position + Vector3.up * .5f) - transform.position;
-                Quaternion targetRotation = Quaternion.LookRotation(relativePos);
-
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
-
-                yield return null;
-            }
-            else
-            {
-                building.CheckTargets();
-                yield return null;
-            }
+            building.UpdateTargets();
+            return;
         }
+        Vector3 relativePos = (targets[0].transform.position + Vector3.up * .5f) - transform.position;
+        Quaternion targetRotation = Quaternion.LookRotation(relativePos);
+
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
     }
 
 
 
-    private IEnumerator Shoot()
+    private void Shoot()
     {
-        while (true)
+        if (currentTime > currentInterval)
         {
-            float interval = Mathf.Lerp(lowEnergyInterval, highEnergyInterval, building.energy.CurrentEnergy);
-
-            float currentTime = 0;
-            while (currentTime < interval)
-            {
-                currentTime += Time.deltaTime;
-                yield return null;
-            }
             Fire();
+            currentInterval = Mathf.Lerp(lowEnergyInterval, highEnergyInterval, building.energy.CurrentEnergyLerp);
+            currentTime = 0;
+            return;
         }
-    }
 
-    public IEnumerator ReturnRotationRoutine()
-    {
-        float currentTime = 0;
-        Quaternion currentRotation = transform.localRotation;
-
-        while (currentTime < returnDuration)
-        {
-            transform.localRotation = Quaternion.Slerp(currentRotation, Quaternion.identity, currentTime / returnDuration);
-            currentTime += Time.deltaTime;
-            yield return null;
-        }
+        currentTime += Time.deltaTime;
     }
 
     void Fire()
     {
         GameObject bullet = Instantiate(bulletPrefab);
-        ChangeEnergy(-1f);
+        ChangeEnergy(-3f);
         bullet.transform.position = bulletEmitter.transform.position;
         bullet.transform.rotation = bulletEmitter.transform.rotation;
     }

@@ -4,9 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelController : MonoBehaviour {
-
-    public Camera MainCamera;
-    public EnemySpawnController EnemySpawnController;
+    public EnemySpawnController enemySpawnController;
+    public CameraController cameraController;
 
     [SerializeField] LevelUIController uiControllerPrefab;
 
@@ -36,6 +35,11 @@ public class LevelController : MonoBehaviour {
     {
         SceneManager.LoadScene("TestLevel");
         Initiate();
+    }
+
+    public void ExitLevel()
+    {
+        SceneManager.LoadScene("Main menu");
     }
     
     public void CheckRemainingEnemies()

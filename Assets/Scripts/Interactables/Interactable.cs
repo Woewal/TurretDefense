@@ -6,27 +6,16 @@ public abstract class Interactable : MonoBehaviour
 
     [HideInInspector] public Player assignedPlayer;
 
-    public virtual void Interact(Player player)
-    {
+    public abstract void Interact(Player player);
 
+    public void AssignPlayer(Player player)
+    {
+        assignedPlayer = player;
+        player.interactionController.interactables.Remove(this);
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void DisassignPlayer()
     {
-        if(other.gameObject.tag == "Player")
-        {
-            if (assignedPlayer == null)
-            {
-                other.gameObject.GetComponent<Player>().interactables.Add(this);
-            }
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.tag == "Player")
-        {
-            other.gameObject.GetComponent<Player>().interactables.Remove(this);
-        }
+        assignedPlayer = null;
     }
 }

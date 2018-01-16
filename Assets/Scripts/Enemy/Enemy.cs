@@ -12,6 +12,8 @@ public class Enemy : MonoBehaviour
     [HideInInspector] public Health health;
     EnemyNavigator enemyNav;
 
+    public DroppableItems droppableItems;
+
     public List<Building> TargetedByBuildings;
 
     private void Start()
@@ -29,12 +31,15 @@ public class Enemy : MonoBehaviour
     void Kill()
     {
         GlobalController.instance.levelController.remainingEnemies.Remove(this);
+
+        Pickup drop = Instantiate(droppableItems.battery);
+        drop.transform.position = transform.position;
+        drop.transform.rotation = transform.rotation;
+
         Destroy(gameObject);
         GlobalController.instance.levelController.CheckRemainingEnemies();
 
-        foreach(Building building in TargetedByBuildings)
-        {
-            building.CheckTargets();
-        }
+        GlobalController.instance.levelController.AddScrap(15);
+        
     }
 }

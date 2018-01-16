@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Energy : MonoBehaviour
 {
-    public float CurrentEnergy
+    public float CurrentEnergyLerp
     {
         get
         {
@@ -12,9 +12,8 @@ public class Energy : MonoBehaviour
     }
     
     [Header("Stats")]
-    [HideInInspector]
-    private float currentEnergy = 500;
-    [HideInInspector] private float maxEnergy = 500;
+    public float currentEnergy;
+    public float maxEnergy = 200;
 
 
 
@@ -28,6 +27,7 @@ public class Energy : MonoBehaviour
     {
         energyBar = Instantiate(energyBarPrefab, energyBarParent);
         energyBar.transform.SetParent(energyBarParent);
+        currentEnergy = maxEnergy;
     }
 
     public void ChangeEnergy(float amount)

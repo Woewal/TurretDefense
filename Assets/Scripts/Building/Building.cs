@@ -7,7 +7,7 @@ using System;
 namespace Game.Building
 {
     [System.Serializable]
-    public class Building : Interactable
+    public class Building : Pickup
     {
         public static float baseHeight = 0.7f;
         public static int maxComponents = 3;
@@ -16,14 +16,11 @@ namespace Game.Building
         public List<Enemy> targetedEnemies = new List<Enemy>();
         public bool isTargeting = false;
 
-        public event Action EnableTargeting;
-        public event Action DisableTargeting;
-
-        public event Action EnemyIsKilled;
-
         public Particle DustEmitter;
 
         public Energy energy;
+
+        [SerializeField] RectTransform userInterface;
 
         [SerializeField] Collider buildingCollider = null;
 
@@ -51,6 +48,8 @@ namespace Game.Building
                 newComponent.transform.position = new Vector3(newComponent.transform.position.x, components.Count * BuildingComponent.size + baseHeight, newComponent.transform.position.z);
                 newComponent.building = this;
                 components.Add(newComponent);
+
+                ChangeUIHeight(components.Count);
             }
         }
 
@@ -69,32 +68,9 @@ namespace Game.Building
             }
         }
 
-        public override void Interact(Player player)
-        {
-            player.buildingPlacer.PickUpBuilding(this);
-            this.assignedPlayer = player;
-        }
-
-        public void CheckTargets()
+        public void UpdateTargets()
         {
             targetedEnemies.RemoveAll(item => item == null);
-
-            if (targetedEnemies.Count > 0 && !isTargeting)
-            {
-                if (EnableTargeting != null)
-                {
-                    EnableTargeting();
-                    isTargeting = true;
-                }
-            }
-            else if (targetedEnemies.Count == 0 && isTargeting)
-            {
-                if (DisableTargeting != null)
-                {
-                    DisableTargeting();
-                    isTargeting = false;
-                }
-            }
         }
 
         public void SortEnemies()
@@ -114,6 +90,35 @@ namespace Game.Building
             {
                 buildingCollider.enabled = false;
             }
+        }
+
+        public override void Use()
+        {
+            if (player.interactionController.interactables.OfType<Building>().Any())
+            {
+                Building newBuilding = player.interactionController.interactables.OfType<Building>().First();
+                newBuilding.AddComponents(components);
+                Destroy(gameObject);
+                Reset();
+            }
+            else if (player.indicator.CanPlace)
+            {
+                SetColliding(true);
+
+                Drop();
+
+                Reset();
+            }
+        }
+
+        public override void DisableCollision()
+        {
+            SetColliding(false);
+        }
+
+        private void ChangeUIHeight(int amountOfComponents)
+        {
+            userInterface.transform.localPosition = Vector3.up * amountOfComponents * BuildingComponent.size + Vector3.up * Building.baseHeight + Vector3.up * 0.3f;
         }
     }
 }

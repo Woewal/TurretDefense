@@ -9,6 +9,11 @@ public class CameraController : MonoBehaviour {
 
     [SerializeField] Vector3 offset = Vector3.zero;
 
+    private void Awake()
+    {
+        GlobalController.instance.levelController.cameraController = this;
+    }
+
     private void LateUpdate()
     {
         if(targets.Count == 1)
@@ -17,13 +22,27 @@ public class CameraController : MonoBehaviour {
         }
         else if(targets.Count > 1)
         {
-            Debug.LogError("Not able to target multiple transforms (Yet to be implemented)");
+            FollowMultipleTargets();
         }
     }
 
     private void FollowTarget()
     {
         transform.position = Vector3.Lerp(transform.position, targets[0].position + offset, cameraSpeed * Time.deltaTime);
+    }
+
+    private void FollowMultipleTargets()
+    {
+        Vector3 average = Vector3.zero;
+
+        foreach (Transform transform in targets)
+        {
+            average += transform.position;
+        }
+
+        average /= targets.Count;
+
+        transform.position = Vector3.Lerp(transform.position, average + offset, cameraSpeed * Time.deltaTime);
     }
 
 }

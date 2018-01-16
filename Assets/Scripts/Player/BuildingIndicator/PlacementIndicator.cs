@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Game.Building;
 
-public class BuildingIndicator : MonoBehaviour
+public class PlacementIndicator : MonoBehaviour
 {
 
     private List<GameObject> obstacles = new List<GameObject>();
@@ -34,62 +34,6 @@ public class BuildingIndicator : MonoBehaviour
     private void Awake()
     {
         fixedRotation = Quaternion.identity;
-    }
-
-    private void OnEnable()
-    {
-        //EnableBuilding();
-        indicatorObject.SetActive(true);
-    }
-
-    private void LateUpdate()
-    {
-        UpdateBuildingLines();
-    }
-
-    public void UpdateDisplay()
-    {
-        if (CanPlace)
-        {
-            EnableBuilding();
-        }
-        else
-        {
-            DisableBuilding();
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.GetComponent<Building>())
-        {
-            indicatorObject.SetActive(false);
-            //DisplayComponentsOnBuilding(other.GetComponent<Building>());
-        }
-        else if (!other.isTrigger)
-        {
-            obstacles.Add(other.gameObject);
-            //UpdateDisplay();
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.GetComponent<Building>())
-        {
-            indicatorObject.SetActive(true);
-            //ResetPreviewComponents();
-
-        }
-        else if (!other.isTrigger)
-        {
-            obstacles.Remove(other.gameObject);
-            if (obstacles.Count == 0)
-            {
-                //UpdateDisplay();
-            }
-        }
-
     }
 
     private void EnableBuilding()

@@ -2,44 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Radar : BuildingComponent {
+public class Radar : BuildingComponent
+{
 
 
     private void Start()
     {
-        building.EnableTargeting += FollowTarget;
-        building.DisableTargeting += StopFollow;
     }
 
     // Update is called once per frame
-    void Update () {
-        //transform.Rotate(0, rotationSpeed * Time.deltaTime, 0);
-	}
-
-    public void FollowTarget()
+    void Update()
     {
-        if (currentCoroutine != null)
+        if (building.targetedEnemies.Count > 0)
         {
-            StopCoroutine(currentCoroutine);
+            FollowTarget();
         }
-        StartCoroutine(FollowTargetRoutine());
-
-        
-    }
-
-    public void StopFollow()
-    {
-        if(currentCoroutine != null)
-            StopCoroutine(currentCoroutine);
-        currentCoroutine = StartCoroutine(ReturnRotationRoutine());
+        else
+        {
+            StopFollow();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Enemy")
         {
-            building.targetedEnemies.Add(other.gameObject.GetComponent<Enemy>());
-            building.CheckTargets();
+            if (!building.targetedEnemies.Contains(other.gameObject.GetComponent<Enemy>()))
+                building.targetedEnemies.Add(other.gameObject.GetComponent<Enemy>());
+            building.UpdateTargets();
         }
     }
 
@@ -48,51 +38,31 @@ public class Radar : BuildingComponent {
         if (other.tag == "Enemy")
         {
             building.targetedEnemies.Remove(other.gameObject.GetComponent<Enemy>());
-            building.CheckTargets();
+            building.UpdateTargets();
         }
     }
-    
-    public IEnumerator FollowTargetRoutine()
+
+    public void FollowTarget()
     {
-        while (true)
+        if (building.targetedEnemies[0] == null)
         {
-            if (building.targetedEnemies.Count > 0)
-            {
-                if (building.targetedEnemies[0] == null)
-                {
-                    building.CheckTargets();
-                    yield return null;
-                }
-                Transform target = building.targetedEnemies[0].transform;
-
-                Vector3 relativePos = (target.position) - transform.position;
-                Quaternion targetRotation = Quaternion.LookRotation(relativePos);
-
-                ChangeEnergy(-0.1f);
-
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
-                yield return null;
-            }
-            else
-            {
-                building.CheckTargets();
-                yield return null;
-            }
+            building.UpdateTargets();
+            return;
         }
+        Transform target = building.targetedEnemies[0].transform;
+
+        Vector3 relativePos = (target.position) - transform.position;
+        Quaternion targetRotation = Quaternion.LookRotation(relativePos);
+
+        ChangeEnergy(-0.1f);
+
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
     }
 
-    public IEnumerator ReturnRotationRoutine()
+    void StopFollow()
     {
-        float currentTime = 0;
-        Quaternion currentRotation = transform.localRotation;
-
-        while (currentTime < returnDuration)
-        {
-            transform.localRotation = Quaternion.Slerp(currentRotation, Quaternion.identity, currentTime / returnDuration);
-            ChangeEnergy(-0.1f);
-            currentTime += Time.deltaTime;
-            yield return null;
-        }
+        transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime * 7);
     }
+
 }
 
