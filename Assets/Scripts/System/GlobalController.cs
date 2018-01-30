@@ -31,7 +31,7 @@ public class GlobalController : MonoBehaviour {
 
         buildingController = GetComponent<BuildingController>();
     }
-
+    
     // Update is called once per frame
     void Update () {
 		if(Input.GetButtonDown("Debug"))

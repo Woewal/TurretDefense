@@ -19,6 +19,7 @@ namespace Game.Building
         public Particle DustEmitter;
 
         public Energy energy;
+        public Health health;
 
         [SerializeField] RectTransform userInterface;
 
@@ -27,6 +28,8 @@ namespace Game.Building
         private void Start()
         {
             energy = GetComponent<Energy>();
+            health = GetComponent<Health>();
+            health.ZeroHealth += DestroyBuilding;
         }
 
         public void BuildTurret(BuildingData data)
@@ -119,6 +122,11 @@ namespace Game.Building
         private void ChangeUIHeight(int amountOfComponents)
         {
             userInterface.transform.localPosition = Vector3.up * amountOfComponents * BuildingComponent.size + Vector3.up * Building.baseHeight + Vector3.up * 0.3f;
+        }
+
+        void DestroyBuilding()
+        {
+            Destroy(gameObject);
         }
     }
 }

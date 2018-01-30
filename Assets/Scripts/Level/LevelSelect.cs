@@ -18,7 +18,10 @@ public class LevelSelect : MonoBehaviour
         foreach (string levelName in availableLevels.scenes)
         {
             Button newButton = Instantiate(levelButtonPrefab, transform);
-            newButton.onClick.AddListener(delegate () { SceneManager.LoadScene(levelName); });
+            newButton.onClick.AddListener(delegate () {
+                SceneManager.LoadScene(levelName);
+                GlobalController.instance.levelController.Initiate();
+            });
         }
     }
 }

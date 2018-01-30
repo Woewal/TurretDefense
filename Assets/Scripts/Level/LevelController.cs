@@ -10,6 +10,7 @@ public class LevelController : MonoBehaviour {
     [SerializeField] LevelUIController uiControllerPrefab;
 
     public Server server;
+
     public List<Enemy> remainingEnemies = new List<Enemy>();
 
     public int scrap;
@@ -19,7 +20,7 @@ public class LevelController : MonoBehaviour {
         Initiate();
     }
 
-    private void Initiate()
+    public void Initiate()
     {
         LevelUIController uiController = Instantiate(uiControllerPrefab);
         uiController.SetScrap(scrap = GlobalController.instance.gameSettings.defaultScrap);
@@ -47,6 +48,14 @@ public class LevelController : MonoBehaviour {
         if (remainingEnemies.Count == 0)
         {
             Debug.Log("Won!");
+        }
+    }
+
+    public void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            ExitLevel();
         }
     }
 }

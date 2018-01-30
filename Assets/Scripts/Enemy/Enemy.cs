@@ -6,15 +6,20 @@ using UnityEngine.UI;
 using System.Linq;
 using Game.Building;
 
-public class Enemy : MonoBehaviour
+[RequireComponent(typeof(EnemyTargetController))]
+public abstract class Enemy : MonoBehaviour
 {
-    public enum Target { Server, Player };
+    public enum Target { Server, Player, Turret };
     [HideInInspector] public Health health;
-    EnemyNavigator enemyNav;
+
+    public Target targetType;
+    [HideInInspector]public Health target;
+
+    public float damage;
+
+    [HideInInspector] public EnemyTargetController targetController;
 
     public DroppableItems droppableItems;
-
-    public List<Building> TargetedByBuildings;
 
     private void Start()
     {
@@ -23,12 +28,14 @@ public class Enemy : MonoBehaviour
 
     public void Initiate()
     {
-        enemyNav = GetComponent<EnemyNavigator>();
+        targetController = GetComponent<EnemyTargetController>();
         health = GetComponent<Health>();
         health.ZeroHealth += Kill;
     }
 
-    void Kill()
+    public abstract void Attack();
+
+    internal void Kill()
     {
         GlobalController.instance.levelController.remainingEnemies.Remove(this);
 
@@ -40,6 +47,10 @@ public class Enemy : MonoBehaviour
         GlobalController.instance.levelController.CheckRemainingEnemies();
 
         GlobalController.instance.levelController.AddScrap(15);
-        
+    }
+
+    public virtual void StartAttacking()
+    {
+
     }
 }
