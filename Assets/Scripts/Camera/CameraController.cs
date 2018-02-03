@@ -9,7 +9,7 @@ public class CameraController : MonoBehaviour {
 
     [SerializeField] Vector3 offset = Vector3.zero;
 
-    private void Start()
+    private void Awake()
     {
         GlobalController.instance.levelController.cameraController = this;
     }

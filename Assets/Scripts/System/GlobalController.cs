@@ -14,7 +14,6 @@ public class GlobalController : MonoBehaviour {
 	void Awake ()
     {
         SetInstance();
-        levelController = GetComponent<LevelController>();
     }
 
     private void SetInstance()
@@ -30,6 +29,7 @@ public class GlobalController : MonoBehaviour {
         }
 
         buildingController = GetComponent<BuildingController>();
+        levelController = GetComponent<LevelController>();
     }
     
     // Update is called once per frame
