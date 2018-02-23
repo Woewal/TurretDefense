@@ -43,12 +43,12 @@ namespace Game.SpacePartitioning
             if(splitHorizontal)
             {
                 leftChild = new Leaf(x, y, width, split);
-                rightChild = new Leaf(x, y, width, height - split);
+                rightChild = new Leaf(x, y + split, width, height - split);
             }
             else
             {
                 leftChild = new Leaf(x, y, split, height);
-                rightChild = new Leaf(x, y, width - split, height);
+                rightChild = new Leaf(x + split, y, width - split, height);
             }
             return true;
         }

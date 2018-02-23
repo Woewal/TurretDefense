@@ -12,7 +12,7 @@ public class EnemySpawnController : MonoBehaviour
 
     [SerializeField] EnemyAmountIndicator[] waveEnemies;
 
-    float spawnInterval = 4f;
+    [SerializeField] float spawnInterval = 4f;
 
     private void Start()
     {

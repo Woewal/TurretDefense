@@ -47,6 +47,7 @@ public abstract class Enemy : MonoBehaviour
         GlobalController.instance.levelController.CheckRemainingEnemies();
 
         GlobalController.instance.levelController.AddScrap(15);
+        Debug.Log("Killed");
     }
 
     public virtual void StartAttacking()

@@ -15,28 +15,33 @@ namespace Game.SpacePartitioning
             Leaf root = new Leaf(0, 0, width, height);
             leafs.Add(root);
 
-            bool didSplit = true;
-            while (didSplit)
-            {
-                didSplit = false;
+            int result;
+            do {
+                result = 0;
+                List<Leaf> splitLeafs = new List<Leaf>();
+                List<Leaf> newLeafs = new List<Leaf>();
                 foreach(var leaf in leafs)
                 {
-                    if(leaf.leftChild == null && leaf.rightChild == null)
+                    if(leaf.Split())
                     {
-                        if(leaf.width > maxLeafSize || leaf.width > maxLeafSize)
-                        {
-                            if(leaf.Split())
-                            {
-                                leafs.Add(leaf.leftChild);
-                                leafs.Add(leaf.rightChild);
-                                didSplit = true;
-                            }
-                        }
+                        splitLeafs.Add(leaf);
+                        newLeafs.Add(leaf.leftChild);
+                        newLeafs.Add(leaf.rightChild);
+                        result++;
                     }
                 }
+                foreach( var leaf in newLeafs)
+                {
+                    leafs.Add(leaf);
+                }
+                foreach (var leaf in splitLeafs)
+                {
+                    leafs.Remove(leaf);
+                }
             }
+            while (result > 0);
+            
             return leafs;
         }
     }
 }
-

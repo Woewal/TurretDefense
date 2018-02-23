@@ -21,10 +21,10 @@ public class LevelGenerator : MonoBehaviour
     {
         level = new Level();
         SetLevelSize(level, 27, 27);
-        AddOuterRing();
-        AddInnerRing();
+        //AddOuterRing();
+        //AddInnerRing();
         FillSpace();
-        DrawLevel();
+        //DrawLevel();
     }
 
     public void SetLevelSize(Level level, int width, int height)
@@ -82,7 +82,13 @@ public class LevelGenerator : MonoBehaviour
     void FillSpace()
     {
         var leafs = BinarySpacePartitioner.GenerateLeafs(level.tiles.GetLength(0), level.tiles.GetLength(1));
-        Debug.Log(leafs.Count);
+        
+        foreach(var leaf in leafs)
+        {
+            var floor = Instantiate(floorPrefab, transform);
+            floor.transform.position = new Vector3(leaf.x, 0, leaf.y);
+            floor.transform.localScale = new Vector3(leaf.width, floor.transform.localScale.y, leaf.height);
+        }
 
     }
 

@@ -26,7 +26,7 @@ public class Demolisher : Enemy
         {
             var health = collider.gameObject.GetComponent<Health>();
 
-            if (health != null)
+            if (health != null && health != this.health)
             {
                 health.Damage(damage);
             }

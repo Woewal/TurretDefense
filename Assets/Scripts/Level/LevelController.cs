@@ -15,7 +15,7 @@ public class LevelController : MonoBehaviour {
 
     public int scrap;
 
-    private void Awake()
+    private void Start()
     {
         Initiate();
     }
