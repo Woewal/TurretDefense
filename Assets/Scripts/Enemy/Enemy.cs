@@ -37,17 +37,10 @@ public abstract class Enemy : MonoBehaviour
 
     internal void Kill()
     {
-        GlobalController.instance.levelController.remainingEnemies.Remove(this);
-
-        Pickup drop = Instantiate(droppableItems.battery);
-        drop.transform.position = transform.position;
-        drop.transform.rotation = transform.rotation;
+        GlobalController.instance.levelController.enemyManager.waveEnemies.Remove(this);
+        GlobalController.instance.levelController.enemyManager.CheckWinningStatus();
 
         Destroy(gameObject);
-        GlobalController.instance.levelController.CheckRemainingEnemies();
-
-        GlobalController.instance.levelController.AddScrap(15);
-        Debug.Log("Killed");
     }
 
     public virtual void StartAttacking()

@@ -4,14 +4,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelController : MonoBehaviour {
-    public EnemySpawnController enemySpawnController;
     public CameraController cameraController;
 
     [SerializeField] LevelUIController uiControllerPrefab;
+    [HideInInspector] public EnemyManager enemyManager;
 
     public Server server;
-
-    public List<Enemy> remainingEnemies = new List<Enemy>();
 
     public int scrap;
 
@@ -22,6 +20,7 @@ public class LevelController : MonoBehaviour {
 
     public void Initiate()
     {
+        enemyManager = GetComponent<EnemyManager>();
         LevelUIController uiController = Instantiate(uiControllerPrefab);
         uiController.SetScrap(scrap = GlobalController.instance.gameSettings.defaultScrap);
     }
@@ -41,14 +40,6 @@ public class LevelController : MonoBehaviour {
     public void ExitLevel()
     {
         SceneManager.LoadScene("Main menu");
-    }
-    
-    public void CheckRemainingEnemies()
-    {
-        if (remainingEnemies.Count == 0)
-        {
-            Debug.Log("Won!");
-        }
     }
 
     public void Update()

@@ -3,11 +3,11 @@ using System.Collections;
 
 public class Energy : MonoBehaviour
 {
-    public float CurrentEnergyLerp
+    public float CurrentEnergy
     {
         get
         {
-            return Mathf.Clamp(currentEnergy / maxEnergy, 0.1f, 1);
+            return Mathf.Clamp(currentEnergy / maxEnergy, 0, 1);
         }
     }
     
@@ -23,7 +23,7 @@ public class Energy : MonoBehaviour
 
     private EnergyBar energyBar;
 
-    private void Start()
+    virtual public void Start()
     {
         energyBar = Instantiate(energyBarPrefab, energyBarParent);
         energyBar.transform.SetParent(energyBarParent);

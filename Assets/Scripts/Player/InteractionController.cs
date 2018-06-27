@@ -8,6 +8,8 @@ public class InteractionController : MonoBehaviour
     public List<Interactable> interactables = new List<Interactable>();
     Player player;
 
+    public bool holdsInteraction = false;
+
     private void Start()
     {
         player = GetComponentInParent<Player>();

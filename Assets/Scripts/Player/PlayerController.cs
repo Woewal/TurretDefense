@@ -6,11 +6,14 @@ public class PlayerController : MonoBehaviour
 {
 
     private Rigidbody rgbd;
-    public float Speed;
-    public float RotationSpeed;
+
+    private float speed;
+    [SerializeField] private float speedOrigin = 10f;
+    [SerializeField] private float rotationSpeed = 10f;
+
     Player player;
 
-    public Animator Animator;
+    public Animator animator;
 
     // Use this for initialization
     void Start()
@@ -22,19 +25,16 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetAxis("Horizontal" + player.playerNumber) != 0 || Input.GetAxis("Vertical" + player.playerNumber) != 0)
-        {
-            MovePlayer(Input.GetAxis("Horizontal" + player.playerNumber), Input.GetAxis("Vertical" + player.playerNumber));
-            Animator.SetBool("Running", true);
-        }
-        else
-        {
-            Animator.SetBool("Running", false);
-        }
+        MovePlayer(Input.GetAxis("Horizontal" + player.playerNumber), Input.GetAxis("Vertical" + player.playerNumber));
 
         if (Input.GetButtonDown("PrimaryAction" + player.playerNumber))
         {
             player.PrimaryAction();
+            player.interactionController.holdsInteraction = true;
+        }
+        else
+        {
+            player.interactionController.holdsInteraction = false;
         }
 
         if (Input.GetButtonDown("SecondaryAction" + player.playerNumber))
@@ -44,17 +44,32 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetButtonDown("TertaryAction" + player.playerNumber))
         {
-            
+
             player.TertaryAction();
         }
     }
 
-    void MovePlayer(float horizontalSpeed, float verticalSpeed)
+    private void MovePlayer(float h, float v)
     {
-        rgbd.MovePosition(new Vector3(transform.position.x + horizontalSpeed * Speed, 0, transform.position.z + verticalSpeed * Speed));
+        if (h != 0f || v != 0f) // If horizontal or vertical are pressed then continue
+        {
+            speed = speedOrigin; // Modify the speed to adjust for moving on an angle
 
-        Quaternion Rotation = Quaternion.LookRotation(new Vector3(horizontalSpeed * 3, 0, verticalSpeed * 3));
+            Vector3 targetDirection = new Vector3(h, 0f, v); // Set a direction using Vector3 based on horizontal and vertical input
+            rgbd.MovePosition(rgbd.position + targetDirection * speed * Time.deltaTime); // Move the players position based on current location while adding the new targetDirection times speed
+            RotatePlayer(targetDirection); // Call the rotate player function sending the targetDirection variable
+            animator.SetBool("Running", true);
+        }
+        else    // If horizontal or vertical are not pressed then continue
+        {
+            animator.SetBool("Running", false);
+        }
+    }
 
-        transform.rotation = Quaternion.Slerp(transform.rotation, Rotation, Time.deltaTime * RotationSpeed);
+    private void RotatePlayer(Vector3 dir)
+    {
+        Quaternion rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * rotationSpeed);
+
+        rgbd.MoveRotation(rotation); // Rotate the player to look at the new targetDirection
     }
 }

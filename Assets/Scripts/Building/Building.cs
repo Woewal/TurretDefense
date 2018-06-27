@@ -16,10 +16,12 @@ namespace Game.Building
         public List<Enemy> targetedEnemies = new List<Enemy>();
         public bool isTargeting = false;
 
-        public Particle DustEmitter;
+        public ParticleSystem DustEmitter;
 
         public Energy energy;
         public Health health;
+
+        public Action OnComponentUpdate;
 
         [SerializeField] RectTransform userInterface;
 
@@ -45,7 +47,7 @@ namespace Game.Building
 
         public void AddComponent(BuildingComponent component)
         {
-            if (components.Count <= Building.maxComponents)
+            if (components.Count <= maxComponents)
             {
                 BuildingComponent newComponent = Instantiate(component, transform);
                 newComponent.transform.position = new Vector3(newComponent.transform.position.x, components.Count * BuildingComponent.size + baseHeight, newComponent.transform.position.z);
@@ -53,6 +55,11 @@ namespace Game.Building
                 components.Add(newComponent);
 
                 ChangeUIHeight(components.Count);
+
+                newComponent.Initialize();
+
+                if(OnComponentUpdate != null)
+                    OnComponentUpdate();
             }
         }
 
@@ -69,18 +76,6 @@ namespace Game.Building
             {
                 Debug.LogError("Too many components");
             }
-        }
-
-        public void UpdateTargets()
-        {
-            targetedEnemies.RemoveAll(item => item == null);
-        }
-
-        public void SortEnemies()
-        {
-            targetedEnemies = targetedEnemies.OrderBy(
-                x => Vector3.Distance(transform.position, x.transform.position)
-            ).ToList();
         }
 
         public void SetColliding(bool on)

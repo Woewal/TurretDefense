@@ -1,25 +1,41 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
-public class Radar : BuildingComponent
+public class Radar : BuildingComponent, ITargetable
 {
+    private List<Enemy> targetedEnemies = new List<Enemy>();
 
+    private List<ITargetable> targetables = new List<ITargetable>();
 
-    private void Start()
+    public override void Initialize()
     {
+        building.OnComponentUpdate += UpdateTargetables;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (building.targetedEnemies.Count > 0)
+        if (targetedEnemies.Count > 0)
         {
-            FollowTarget();
+            if(targetedEnemies[0] == null)
+            {
+                SortTargets();
+                return;
+            }
+            
+            foreach (var targetable in targetables)
+            {
+                targetable.OnTargetUpdate(targetedEnemies[0]);
+            }
         }
         else
         {
-            StopFollow();
+            foreach (var targetable in targetables)
+            {
+                targetable.OnUntargetUpdate();
+            }
         }
     }
 
@@ -27,9 +43,10 @@ public class Radar : BuildingComponent
     {
         if (other.tag == "Enemy")
         {
-            if (!building.targetedEnemies.Contains(other.gameObject.GetComponent<Enemy>()))
-                building.targetedEnemies.Add(other.gameObject.GetComponent<Enemy>());
-            building.UpdateTargets();
+            var enemy = other.gameObject.GetComponent<Enemy>();
+
+            if (!targetedEnemies.Contains(enemy))
+                targetedEnemies.Add(enemy);
         }
     }
 
@@ -37,31 +54,42 @@ public class Radar : BuildingComponent
     {
         if (other.tag == "Enemy")
         {
-            building.targetedEnemies.Remove(other.gameObject.GetComponent<Enemy>());
-            building.UpdateTargets();
+            targetedEnemies.Remove(other.gameObject.GetComponent<Enemy>());
         }
     }
 
-    public void FollowTarget()
+    public void SortTargets()
     {
-        if (building.targetedEnemies[0] == null)
+        targetedEnemies.RemoveAll(item => item == null);
+
+        targetedEnemies = targetedEnemies.OrderBy(
+           x => Vector3.Distance(this.transform.position, x.transform.position)
+          ).ToList();
+    }
+
+    private void UpdateTargetables()
+    {
+        targetables.Clear();
+
+        foreach (var component in building.components)
         {
-            building.UpdateTargets();
-            return;
+            if (component is ITargetable)
+            {
+                targetables.Add((ITargetable)component);
+            }
         }
-        Transform target = building.targetedEnemies[0].transform;
+    }
 
-        Vector3 relativePos = (target.position) - transform.position;
-        Quaternion targetRotation = Quaternion.LookRotation(relativePos);
-
-        ChangeEnergy(-0.1f);
+    public void OnTargetUpdate(Enemy enemy)
+    {
+        Quaternion targetRotation = Quaternion.LookRotation(enemy.transform.position - transform.position);
 
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
     }
 
-    void StopFollow()
+    public void OnUntargetUpdate()
     {
-        transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime * 7);
+        transform.localEulerAngles = Quaternion.Euler(new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y + Time.deltaTime * rotationSpeed * 10, transform.localEulerAngles.z)).eulerAngles;
     }
 
 }

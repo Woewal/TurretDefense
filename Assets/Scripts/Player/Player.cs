@@ -11,22 +11,20 @@ public class Player : MonoBehaviour
 
     public enum PlayerState { Default, Building }
 
-    public PlayerState state;
+    [HideInInspector] public PlayerState state;
 
-    [HideInInspector] public PlayerController controller;
-
-    public InteractionController interactionController;
+    [HideInInspector] public PlayerController movementController;
+    [HideInInspector] public InteractionController interactionController;
+    [HideInInspector] public PlacementIndicator indicator;
 
     public Action PrimaryAction;
     public Action SecondaryAction;
     public Action TertaryAction;
 
-    public PlacementIndicator indicator; 
-
     private void Start()
     {
         state = PlayerState.Default;
-        controller = GetComponent<PlayerController>();
+        movementController = GetComponent<PlayerController>();
         indicator = GetComponentInChildren<PlacementIndicator>();
         interactionController = GetComponentInChildren<InteractionController>();
         ResetPlayerActions();

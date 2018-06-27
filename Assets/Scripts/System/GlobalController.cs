@@ -5,7 +5,6 @@ using UnityEngine;
 public class GlobalController : MonoBehaviour {
 
     [HideInInspector] public static GlobalController instance;
-    [HideInInspector] public BuildingController buildingController;
     [HideInInspector] public LevelController levelController;
 
     public GameSettings gameSettings;
@@ -27,9 +26,8 @@ public class GlobalController : MonoBehaviour {
         {
             Destroy(this);
         }
-
-        buildingController = GetComponent<BuildingController>();
-        levelController = GetComponent<LevelController>();
+        
+        levelController = GetComponentInChildren<LevelController>();
     }
     
     // Update is called once per frame

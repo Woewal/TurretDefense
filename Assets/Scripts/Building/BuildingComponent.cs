@@ -23,4 +23,6 @@ public abstract class BuildingComponent : MonoBehaviour
     {
         building.energy.ChangeEnergy(amount);
     }
+
+    virtual public void Initialize() { }
 }

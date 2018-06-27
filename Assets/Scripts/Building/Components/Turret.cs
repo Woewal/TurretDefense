@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Turret : BuildingComponent
+public class Turret : BuildingComponent, ITargetable
 {
     private List<Enemy> targets;
 
@@ -22,52 +22,35 @@ public class Turret : BuildingComponent
     private void Start()
     {
         originalRotation = transform.rotation;
-
-        targets = building.targetedEnemies;
-
-        currentInterval = Mathf.Lerp(lowEnergyInterval, highEnergyInterval, building.energy.CurrentEnergyLerp);
+        currentInterval = Mathf.Lerp(lowEnergyInterval, highEnergyInterval, building.energy.CurrentEnergy);
     }
 
-    private void Update()
+    public void OnTargetUpdate(Enemy enemy)
     {
-        if (building.targetedEnemies.Count > 0)
-        {
-            FollowTarget();
-            Shoot();
-        }
-        else
-        {
-            StopFollow();
-        }
-    }
-
-    public void StopFollow()
-    {
-
-    }
-
-    public void FollowTarget()
-    {
-
-        if (targets[0] == null)
-        {
-            building.UpdateTargets();
-            return;
-        }
-        Vector3 relativePos = (targets[0].transform.position + Vector3.up * .5f) - transform.position;
-        Quaternion targetRotation = Quaternion.LookRotation(relativePos);
-
+        Quaternion targetRotation = Quaternion.LookRotation(enemy.transform.position - transform.position);
+        
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+
+        Debug.Log(Quaternion.Angle(transform.rotation, targetRotation));
+
+        AttemptShoot();
+
+        currentTime += Time.deltaTime;
     }
 
-
-
-    private void Shoot()
+    public void OnUntargetUpdate()
     {
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(0,0,0), Time.deltaTime * rotationSpeed);
+    }
+
+    private void AttemptShoot()
+    {
+        
+
         if (currentTime > currentInterval)
         {
             Fire();
-            currentInterval = Mathf.Lerp(lowEnergyInterval, highEnergyInterval, building.energy.CurrentEnergyLerp);
+            currentInterval = Mathf.Lerp(lowEnergyInterval, highEnergyInterval, building.energy.CurrentEnergy);
             currentTime = 0;
             return;
         }
