@@ -16,8 +16,6 @@ namespace Game.Building
         public List<Enemy> targetedEnemies = new List<Enemy>();
         public bool isTargeting = false;
 
-        public ParticleSystem DustEmitter;
-
         public Energy energy;
         public Health health;
 
@@ -27,24 +25,20 @@ namespace Game.Building
 
         [SerializeField] Collider buildingCollider = null;
 
+        /// <summary>
+        /// Initializes the building
+        /// </summary>
         private void Start()
         {
             energy = GetComponent<Energy>();
             health = GetComponent<Health>();
             health.ZeroHealth += DestroyBuilding;
         }
-
-        public void BuildTurret(BuildingData data)
-        {
-            //Particle de = Instantiate(DustEmitter, this.transform);
-            //de.transform.position = this.transform.position;
-
-            for (int i = 0; i < data.components.Count; i++)
-            {
-                AddComponent(data.components[i]);
-            }
-        }
-
+        
+        /// <summary>
+        /// Adds the component to the building
+        /// </summary>
+        /// <param name="component"></param>
         public void AddComponent(BuildingComponent component)
         {
             if (components.Count <= maxComponents)
@@ -63,6 +57,10 @@ namespace Game.Building
             }
         }
 
+        /// <summary>
+        /// Adds a list of components to the building
+        /// </summary>
+        /// <param name="newComponents"></param>
         public void AddComponents(List<BuildingComponent> newComponents)
         {
             if (components.Count + newComponents.Count <= Building.maxComponents)
@@ -78,6 +76,10 @@ namespace Game.Building
             }
         }
 
+        /// <summary>
+        /// Changes whether the building is colliding
+        /// </summary>
+        /// <param name="on"></param>
         public void SetColliding(bool on)
         {
             if (on)
@@ -90,6 +92,9 @@ namespace Game.Building
             }
         }
 
+        /// <summary>
+        /// Enables the player to pick up the building
+        /// </summary>
         public override void Use()
         {
             if (player.interactionController.interactables.OfType<Building>().Any())
@@ -109,16 +114,26 @@ namespace Game.Building
             }
         }
 
+        /// <summary>
+        /// Disables collision with the building
+        /// </summary>
         public override void DisableCollision()
         {
             SetColliding(false);
         }
 
+        /// <summary>
+        /// Changes the position of the UI based on how many components the building has
+        /// </summary>
+        /// <param name="amountOfComponents"></param>
         private void ChangeUIHeight(int amountOfComponents)
         {
             userInterface.transform.localPosition = Vector3.up * amountOfComponents * BuildingComponent.size + Vector3.up * Building.baseHeight + Vector3.up * 0.3f;
         }
 
+        /// <summary>
+        /// Destroys the building
+        /// </summary>
         void DestroyBuilding()
         {
             Destroy(gameObject);

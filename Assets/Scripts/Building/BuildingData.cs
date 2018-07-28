@@ -6,6 +6,6 @@ public class BuildingData
 {
     //public float cost = 10;
 
-    public List<BuildingComponent> components = new List<BuildingComponent>();         
+    public List<BuildingComponent> components = new List<BuildingComponent>();
 }
 

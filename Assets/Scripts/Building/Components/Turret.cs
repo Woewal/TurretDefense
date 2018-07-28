@@ -25,6 +25,11 @@ public class Turret : BuildingComponent, ITargetable
         currentInterval = Mathf.Lerp(lowEnergyInterval, highEnergyInterval, building.energy.CurrentEnergy);
     }
 
+
+    /// <summary>
+    /// Points at the target and shoots if able to
+    /// </summary>
+    /// <param name="enemy"></param>
     public void OnTargetUpdate(Enemy enemy)
     {
         Quaternion targetRotation = Quaternion.LookRotation(enemy.transform.position - transform.position);
@@ -38,15 +43,19 @@ public class Turret : BuildingComponent, ITargetable
         currentTime += Time.deltaTime;
     }
 
+    /// <summary>
+    /// Return to orinigal rotation
+    /// </summary>
     public void OnUntargetUpdate()
     {
         transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(0,0,0), Time.deltaTime * rotationSpeed);
     }
 
+    /// <summary>
+    /// Shoots if requirements are met
+    /// </summary>
     private void AttemptShoot()
     {
-        
-
         if (currentTime > currentInterval)
         {
             Fire();
@@ -58,6 +67,9 @@ public class Turret : BuildingComponent, ITargetable
         currentTime += Time.deltaTime;
     }
 
+    /// <summary>
+    /// Spawns a bullet
+    /// </summary>
     void Fire()
     {
         GameObject bullet = Instantiate(bulletPrefab);

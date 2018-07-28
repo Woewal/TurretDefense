@@ -49,6 +49,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Moves the player based on horizontal and vertical input
+    /// </summary>
+    /// <param name="h"></param>
+    /// <param name="v"></param>
     private void MovePlayer(float h, float v)
     {
         if (h != 0f || v != 0f) // If horizontal or vertical are pressed then continue
@@ -66,6 +71,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Rotates the player to a specified rotation
+    /// </summary>
+    /// <param name="dir"></param>
     private void RotatePlayer(Vector3 dir)
     {
         Quaternion rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * rotationSpeed);

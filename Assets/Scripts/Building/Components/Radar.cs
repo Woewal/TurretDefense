@@ -39,6 +39,10 @@ public class Radar : BuildingComponent, ITargetable
         }
     }
 
+    /// <summary>
+    /// Detects whenever an enemy enters the range of the radar
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Enemy")
@@ -50,6 +54,10 @@ public class Radar : BuildingComponent, ITargetable
         }
     }
 
+    /// <summary>
+    /// Detects whenever an enemy leaves the range of the radar
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerExit(Collider other)
     {
         if (other.tag == "Enemy")
@@ -58,6 +66,9 @@ public class Radar : BuildingComponent, ITargetable
         }
     }
 
+    /// <summary>
+    /// Sorts the targets based on the distance from the radar
+    /// </summary>
     public void SortTargets()
     {
         targetedEnemies.RemoveAll(item => item == null);
@@ -67,6 +78,9 @@ public class Radar : BuildingComponent, ITargetable
           ).ToList();
     }
 
+    /// <summary>
+    /// Finds the components in the building that are compatible with the radar
+    /// </summary>
     private void UpdateTargetables()
     {
         targetables.Clear();
@@ -80,6 +94,10 @@ public class Radar : BuildingComponent, ITargetable
         }
     }
 
+    /// <summary>
+    /// Points at the target
+    /// </summary>
+    /// <param name="enemy"></param>
     public void OnTargetUpdate(Enemy enemy)
     {
         Quaternion targetRotation = Quaternion.LookRotation(enemy.transform.position - transform.position);

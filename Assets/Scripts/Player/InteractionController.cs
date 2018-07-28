@@ -23,6 +23,9 @@ public class InteractionController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Interacts with the closest interactable
+    /// </summary>
     public void Interact()
     {
         if (interactables.Count != 0)
@@ -35,6 +38,10 @@ public class InteractionController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Adds an interactable to the list when in range of the player
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
         Interactable interactable = other.GetComponent<Interactable>();
@@ -49,6 +56,10 @@ public class InteractionController : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Removes an interactable from the list when out of range from the player
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerExit(Collider other)
     {
         Interactable interactable = other.GetComponent<Interactable>();

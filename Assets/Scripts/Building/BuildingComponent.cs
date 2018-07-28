@@ -19,6 +19,10 @@ public abstract class BuildingComponent : MonoBehaviour
 
     public Coroutine currentCoroutine;
     
+    /// <summary>
+    /// Adds or subtracts energy
+    /// </summary>
+    /// <param name="amount"></param>
     public void ChangeEnergy(float amount)
     {
         building.energy.ChangeEnergy(amount);

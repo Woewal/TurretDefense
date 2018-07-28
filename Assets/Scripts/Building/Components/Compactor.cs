@@ -7,6 +7,8 @@ public class Compactor : BuildingComponent
 
     [SerializeField] float consumptionRate = 20f;
 
+    //TODO: change this code
+
     private void Update()
     {
         if (energyLeft > 0 && building.energy.currentEnergy < building.energy.maxEnergy)
@@ -22,9 +24,9 @@ public class Compactor : BuildingComponent
             building.energy.ChangeEnergy(consumption);
         }
     }
-
+   
     public void AddEnergy(float amount)
     {
-        energyLeft = Mathf.Clamp(energyLeft + amount, 0, 999999);
+        //energyLeft = Mathf.Clamp(energyLeft + amount, 0, 999999);
     }
 }

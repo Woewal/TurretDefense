@@ -9,6 +9,10 @@ public class Bullet : Projectile
         transform.Translate(Vector3.forward * Speed * Time.deltaTime);
     }
 
+    /// <summary>
+    /// Subtracts health from enemy when hit
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Enemy")

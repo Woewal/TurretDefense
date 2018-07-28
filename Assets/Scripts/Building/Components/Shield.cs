@@ -8,6 +8,10 @@ public class Shield : BuildingComponent {
         ChangeEnergy(-0.1f);
     }
 
+    /// <summary>
+    /// Destroys enemy projectiles whenever they hit the shield
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
         var projectile = other.GetComponent<Projectile>();

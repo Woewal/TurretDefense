@@ -14,6 +14,9 @@ public class CameraController : MonoBehaviour {
         GlobalController.instance.levelController.cameraController = this;
     }
 
+    /// <summary>
+    /// Makes the camera follow the player(s)
+    /// </summary>
     private void LateUpdate()
     {
         if(targets.Count == 1)
@@ -26,11 +29,17 @@ public class CameraController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Lerp to the player position
+    /// </summary>
     private void FollowTarget()
     {
         transform.position = Vector3.Lerp(transform.position, targets[0].position + offset, cameraSpeed * Time.deltaTime);
     }
 
+    /// <summary>
+    /// Lerp to multiple targets
+    /// </summary>
     private void FollowMultipleTargets()
     {
         Vector3 average = Vector3.zero;
